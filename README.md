@@ -4,7 +4,7 @@ Generate nice icons of molecules from SMILES.
 
 This program takes some icons of atoms and bonds (provided with the code) and following the topology of an SMILES chemical structure combine the into an icon. 
 
-## requirements
+## Requirements
 - rdkit (`pip install rdkit`)
 - opencv (`pip install opencv-python`)
 - argparse (`pip install argparse`)
