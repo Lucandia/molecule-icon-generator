@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+__author__ = "Luca Monari"
+__credits__ = ["Luca Monari"]
+__version__ = "1.0"
+__email__ = "luca.monari@etu.unistra.fr"
+
+import numpy as np
+import cv2
+import rdkit
+from rdkit import Chem
+from rdkit.Chem import Draw
+from rdkit.Chem import AllChem
+import math
+import itertools
+import argparse
+import os
+ 
+atom_icon_dir = "/your/path/to/base-icons/"
+
+def rotate_image(image, angle):
+  image_center = tuple(np.array(image.shape[1::-1]) / 2)
+  rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+  result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+  return result
+
+def add_image(src, new, position):
+    # position (x,y)
+    new_x = nit.shape[1]
+    new_y = nit.shape[0]
+    y_offset = position[1] - new_y//2
+    x_offset = position[0] - new_x//2
+    for y_index, y in enumerate(range(y_offset,y_offset+new.shape[0])):
+        for x_index, x in enumerate(range(x_offset,x_offset+new.shape[1])):
+            if new[y_index, x_index][3] != 0:
+                src[y,x] = new[y_index, x_index]
+    # src[y_offset:y_offset+new.shape[0], x_offset:x_offset+new.shape[1]] = new
+    return src
+
+def add_bond(src, bond_type, degree, position):
+    new_bond = rotate_image(bond_type.copy(), degree)
+    add_image(src, new_bond, position)
+
+    
+# alpha channel too
+blank_image = np.zeros((3500,3500,4), np.uint8)
+
+resize_dim = (300, 300)
+car = cv2.imread(atom_icon_dir + os.sep + "carbon.png", cv2.IMREAD_UNCHANGED)
+car = cv2.resize(car, resize_dim, interpolation = cv2.INTER_AREA)
+oxy = cv2.imread(atom_icon_dir + os.sep + "oxygen.png", cv2.IMREAD_UNCHANGED)
+oxy = cv2.resize(oxy, resize_dim, interpolation = cv2.INTER_AREA)
+nit = cv2.imread(atom_icon_dir + os.sep + "nitrogen.png", cv2.IMREAD_UNCHANGED)
+nit = cv2.resize(nit, resize_dim, interpolation = cv2.INTER_AREA)
+sul = cv2.imread(atom_icon_dir + os.sep + "sulfur.png", cv2.IMREAD_UNCHANGED)
+sul = cv2.resize(sul, resize_dim, interpolation = cv2.INTER_AREA)
+chl = cv2.imread(atom_icon_dir + os.sep + "chlorine.png", cv2.IMREAD_UNCHANGED)
+chl = cv2.resize(chl, resize_dim, interpolation = cv2.INTER_AREA)
+hyd = cv2.imread(atom_icon_dir + os.sep + "hydrogen.png", cv2.IMREAD_UNCHANGED)
+hyd = cv2.resize(hyd, resize_dim, interpolation = cv2.INTER_AREA)
+s_bond = cv2.imread(atom_icon_dir + os.sep + "bond.png", cv2.IMREAD_UNCHANGED)
+s_bond = cv2.resize(s_bond, resize_dim, interpolation = cv2.INTER_AREA)
+d_bond = cv2.imread(atom_icon_dir + os.sep + "double_bond.png", cv2.IMREAD_UNCHANGED)
+d_bond = cv2.resize(d_bond, resize_dim, interpolation = cv2.INTER_AREA)
+t_bond = cv2.imread(atom_icon_dir + os.sep + "triple_bond.png", cv2.IMREAD_UNCHANGED)
+t_bond = cv2.resize(t_bond, resize_dim, interpolation = cv2.INTER_AREA)
+icon_map = {'C': car, 'O': oxy, 'N': nit, 'H': hyd, "Cl": chl, 'F': chl, 'S': sul}
+
+def icon_print(SMILES, name = 'image', directory = os.getcwd(), rdkit_img = False, single_bonds = False, verbose=False):
+    img = blank_image.copy()
+    mol = Chem.MolFromSmiles(SMILES)
+    mol = Chem.AddHs(mol)
+    AllChem.Compute2DCoords(mol)
+    mol.GetConformer()
+    
+    atom_map = dict()
+    atom_type_map = dict()
+    atom_bond_map = dict()
+    for i, atom in enumerate(mol.GetAtoms()):
+        positions = mol.GetConformer().GetAtomPosition(i)
+        atom_symbol = atom.GetSymbol()
+        x = int( positions.x * 150 + img.shape[1]//2 )
+        y = int( positions.y * 150 + img.shape[0]//2 )
+        atom_map [i] = (x,y)
+        atom_bonds = rdkit.Chem.rdchem.Atom.GetBonds(atom)
+        atom_bond_map [i] = len(atom_bonds)
+        atom_type_map [i] = atom_symbol
+        if verbose:
+            print(atom_symbol, x, y, positions.z)
+    
+    bonds_list = list(itertools.combinations(list(atom_map.keys()), 2))
+    aromatic_index = set()
+    for couple in bonds_list:
+        atom1 = couple[0]
+        atom2 = couple[1]
+        BOND = mol.GetBondBetweenAtoms(atom1,atom2)
+        if BOND:
+            x1 = atom_map[atom1][0]
+            y1 = atom_map[atom1][1]
+            x2 = atom_map[atom2][0]
+            y2 = atom_map[atom2][1]           
+            mid_x = ( x1 + x2 ) // 2
+            mid_y = ( y1 + y2 ) // 2
+            position = (mid_x, mid_y)
+            myradians = math.atan2(y1-y2, x2-x1)
+            mydegrees = math.degrees(myradians)
+            b_type = BOND.GetBondType()
+            bond_img = s_bond
+            if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
+                bond_img = d_bond
+            elif rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
+                conditions = [atom1 not in aromatic_index, atom2 not in aromatic_index,
+                              atom_type_map[atom1] != 'O', atom_type_map[atom2] != 'O',
+                              atom_type_map[atom1] != 'S', atom_type_map[atom2] != 'S',
+                              atom_type_map[atom1] != 'N' or atom_bond_map[atom1] < 3,
+                              atom_type_map[atom2] != 'N' or atom_bond_map[atom2] < 3]
+                if all(conditions):
+                    bond_img = d_bond
+                    aromatic_index.add(atom1)
+                    aromatic_index.add(atom2)
+            elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
+                bond_img = t_bond
+            add_bond(img, bond_img, mydegrees, position)     
+                
+    for i in reversed(range(len(mol.GetAtoms()))):
+        atom = mol.GetAtoms()[i]
+        atom = atom.GetSymbol()
+        add_image(img, icon_map[atom], (atom_map[i][0], atom_map[i][1] ))
+    
+    if rdkit_img:
+        rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
+    cv2.imwrite(directory + os.sep + name + ".png", img) 
+    print(name +' Completed')
+
+
+def parse():
+    # create a parser for command line
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                     description='Produce 2D icons of molecules from smiles.')
+    main = parser.add_argument_group('[ Required ]')
+    main.add_argument('SMILE',
+                      metavar='SMILE string',
+                      help='Smile of the molecule to produce the icon')
+
+    optional = parser.add_argument_group('[ Optional ]')
+    optional.add_argument("--name",
+                          metavar='STR',
+                          default = 'IMAGE',
+                          help='Name of the png output file')
+    optional.add_argument("-d", '--directory',
+                          metavar='FOLDER',
+                          default= os.getcwd(),
+                          help='Path to the folder to save the icon file ')
+    optional.add_argument("--rdkit_draw",
+                          action='store_true',
+                          help='Use this flag to save also the rdkit 2D image of the molecule')
+    optional.add_argument("-s", "--single_bond",
+                          action='store_true',
+                          help='Use this flag to draw single bonds only')
+    optional.add_argument("-v", "--verbose",
+                          action='store_true',
+                          help='Print the 2D coordinates of each atom')
+    args = parser.parse_args()
+    return args 
+
+if __name__ == "__main__":
+    parsed = parse()
+    icon_print(parsed.SMILE, parsed.name, parsed.directory, parsed.rdkit_draw, 
+               parsed.single_bond, parsed.verbose)
+
+
