@@ -13,7 +13,7 @@ This program takes some icons of atoms and bonds (provided with the code) and fo
 ### Step 1: clone the repository
 
 ```
-git clone
+git clone https://github.com/lmonari5/molecule-icon-generator.git
 ```
 
 ### Step 2: insert the directory with the atom and bond icons
