@@ -26,8 +26,8 @@ def rotate_image(image, angle):
 
 def add_image(src, new, position):
     # position (x,y)
-    new_x = nit.shape[1]
-    new_y = nit.shape[0]
+    new_x = new.shape[1]
+    new_y = new.shape[0]
     y_offset = position[1] - new_y//2
     x_offset = position[0] - new_x//2
     for y_index, y in enumerate(range(y_offset,y_offset+new.shape[0])):
@@ -40,31 +40,16 @@ def add_image(src, new, position):
 def add_bond(src, bond_type, degree, position):
     new_bond = rotate_image(bond_type.copy(), degree)
     add_image(src, new_bond, position)
-
-    
+  
 # alpha channel too
 blank_image = np.zeros((3500,3500,4), np.uint8)
 
 resize_dim = (300, 300)
-car = cv2.imread(atom_icon_dir + os.sep + "carbon.png", cv2.IMREAD_UNCHANGED)
-car = cv2.resize(car, resize_dim, interpolation = cv2.INTER_AREA)
-oxy = cv2.imread(atom_icon_dir + os.sep + "oxygen.png", cv2.IMREAD_UNCHANGED)
-oxy = cv2.resize(oxy, resize_dim, interpolation = cv2.INTER_AREA)
-nit = cv2.imread(atom_icon_dir + os.sep + "nitrogen.png", cv2.IMREAD_UNCHANGED)
-nit = cv2.resize(nit, resize_dim, interpolation = cv2.INTER_AREA)
-sul = cv2.imread(atom_icon_dir + os.sep + "sulfur.png", cv2.IMREAD_UNCHANGED)
-sul = cv2.resize(sul, resize_dim, interpolation = cv2.INTER_AREA)
-chl = cv2.imread(atom_icon_dir + os.sep + "chlorine.png", cv2.IMREAD_UNCHANGED)
-chl = cv2.resize(chl, resize_dim, interpolation = cv2.INTER_AREA)
-hyd = cv2.imread(atom_icon_dir + os.sep + "hydrogen.png", cv2.IMREAD_UNCHANGED)
-hyd = cv2.resize(hyd, resize_dim, interpolation = cv2.INTER_AREA)
-s_bond = cv2.imread(atom_icon_dir + os.sep + "bond.png", cv2.IMREAD_UNCHANGED)
-s_bond = cv2.resize(s_bond, resize_dim, interpolation = cv2.INTER_AREA)
-d_bond = cv2.imread(atom_icon_dir + os.sep + "double_bond.png", cv2.IMREAD_UNCHANGED)
-d_bond = cv2.resize(d_bond, resize_dim, interpolation = cv2.INTER_AREA)
-t_bond = cv2.imread(atom_icon_dir + os.sep + "triple_bond.png", cv2.IMREAD_UNCHANGED)
-t_bond = cv2.resize(t_bond, resize_dim, interpolation = cv2.INTER_AREA)
-icon_map = {'C': car, 'O': oxy, 'N': nit, 'H': hyd, "Cl": chl, 'F': chl, 'S': sul}
+icon_map = dict()
+for file in os.listdir(atom_icon_dir):
+    file_img = cv2.imread(atom_icon_dir + os.sep + file, cv2.IMREAD_UNCHANGED)
+    file_img = cv2.resize(file_img, resize_dim, interpolation = cv2.INTER_AREA)
+    icon_map [file.split('.')[0]] = file_img
 
 def icon_print(SMILES, name = 'image', directory = os.getcwd(), rdkit_img = False, single_bonds = False, verbose=False):
     img = blank_image.copy()
@@ -105,9 +90,9 @@ def icon_print(SMILES, name = 'image', directory = os.getcwd(), rdkit_img = Fals
             myradians = math.atan2(y1-y2, x2-x1)
             mydegrees = math.degrees(myradians)
             b_type = BOND.GetBondType()
-            bond_img = s_bond
+            bond_img = icon_map ['single']
             if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
-                bond_img = d_bond
+                bond_img = icon_map ['double']
             elif rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
                 conditions = [atom1 not in aromatic_index, atom2 not in aromatic_index,
                               atom_type_map[atom1] != 'O', atom_type_map[atom2] != 'O',
@@ -115,11 +100,11 @@ def icon_print(SMILES, name = 'image', directory = os.getcwd(), rdkit_img = Fals
                               atom_type_map[atom1] != 'N' or atom_bond_map[atom1] < 3,
                               atom_type_map[atom2] != 'N' or atom_bond_map[atom2] < 3]
                 if all(conditions):
-                    bond_img = d_bond
+                    bond_img = icon_map ['double']
                     aromatic_index.add(atom1)
                     aromatic_index.add(atom2)
             elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
-                bond_img = t_bond
+                bond_img = icon_map ['triple']
             add_bond(img, bond_img, mydegrees, position)     
                 
     for i in reversed(range(len(mol.GetAtoms()))):
@@ -167,5 +152,3 @@ if __name__ == "__main__":
     parsed = parse()
     icon_print(parsed.SMILE, parsed.name, parsed.directory, parsed.rdkit_draw, 
                parsed.single_bond, parsed.verbose)
-
-
