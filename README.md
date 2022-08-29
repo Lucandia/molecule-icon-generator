@@ -1,6 +1,6 @@
 # molecule-icon-generator
-
-Generate nice icons of molecules with a python script.
+<img src="example.png" width=35% height=35%>
+Generate nice icons of molecules from SMILES.
 
 This program takes some icons of atoms and bonds (provided with the code) and following the topology of an SMILES chemical structure combine the into an icon. 
 
@@ -26,15 +26,15 @@ atom_icon_dir = "/your/path/to/base-icons/"
 
 ### Step 3: Have Fun
 
-Run the code from command line:
+- Run the code from command line:
 
-```
- python molecules_icon_generator.py "CC(=O)Nc1ccc(cc1)O" --name paracetamol --rdkit_draw
-```
+ ```
+  python molecules_icon_generator.py "CC(=O)Nc1ccc(cc1)O" --name paracetamol --rdkit_draw
+ ```
 
-Or from the python interpreter:
+- Or from the python interpreter:
 
-```
-from molecules_icon_generator import icon_print 
-icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_img = True, single_bonds = False, verbose=False)
-```
+ ```
+ from molecules_icon_generator import icon_print 
+ icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_img = True, single_bonds = False, verbose=False)
+ ```
