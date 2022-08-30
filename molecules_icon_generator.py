@@ -117,7 +117,7 @@ def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_im
     if rdkit_img:
         rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
     cv2.imwrite(directory + os.sep + name + ".png", img) 
-    print(name +' completed')
+    print('\033[0;32m' + name +' completed' + '\033[0;0;m')
 
 
 def parse():
