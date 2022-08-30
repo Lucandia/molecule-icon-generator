@@ -51,10 +51,12 @@ for file in os.listdir(atom_icon_dir):
     file_img = cv2.resize(file_img, resize_dim, interpolation = cv2.INTER_AREA)
     icon_map [file.split('.')[0]] = file_img
 
-def icon_print(SMILES, name = 'image', directory = os.getcwd(), rdkit_img = False, single_bonds = False, verbose=False):
+def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_img = False, 
+               single_bonds = False, remove_H = False, verbose=False):
     img = blank_image.copy()
     mol = Chem.MolFromSmiles(SMILES)
-    mol = Chem.AddHs(mol)
+    if not remove_H:
+        mol = Chem.AddHs(mol)
     AllChem.Compute2DCoords(mol)
     mol.GetConformer()
     
@@ -115,7 +117,7 @@ def icon_print(SMILES, name = 'image', directory = os.getcwd(), rdkit_img = Fals
     if rdkit_img:
         rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
     cv2.imwrite(directory + os.sep + name + ".png", img) 
-    print(name +' Completed')
+    print(name +' completed')
 
 
 def parse():
@@ -130,7 +132,7 @@ def parse():
     optional = parser.add_argument_group('[ Optional ]')
     optional.add_argument("--name",
                           metavar='STR',
-                          default = 'IMAGE',
+                          default = 'molecule_icon',
                           help='Name of the png output file')
     optional.add_argument("-d", '--directory',
                           metavar='FOLDER',
@@ -142,6 +144,9 @@ def parse():
     optional.add_argument("-s", "--single_bond",
                           action='store_true',
                           help='Use this flag to draw single bonds only')
+    optional.add_argument("--remove_H",
+                          action='store_true',
+                          help='Use this flag to remove the hydrogens from the structure')
     optional.add_argument("-v", "--verbose",
                           action='store_true',
                           help='Print the 2D coordinates of each atom')
@@ -151,4 +156,4 @@ def parse():
 if __name__ == "__main__":
     parsed = parse()
     icon_print(parsed.SMILE, parsed.name, parsed.directory, parsed.rdkit_draw, 
-               parsed.single_bond, parsed.verbose)
+               parsed.single_bond, parsed.remove_H, parsed.verbose)
