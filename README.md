@@ -36,7 +36,7 @@ atom_icon_dir = "/your/path/to/base-icons/"
 
  ```
  from molecules_icon_generator import icon_print 
- icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_img = True, single_bonds = False, verbose=False)
+ icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_img = True, single_bonds = False, remove_H = False, verbose=False)
  ```
 
 ## Use your icons!
