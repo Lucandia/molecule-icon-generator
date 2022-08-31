@@ -44,11 +44,6 @@ if __name__ == "__main__":
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
     st.image(im_rgba, caption = 'Iupac name: ' + iupac, channels = 'RGBA')
     
-    st.write(f'''
-    Image saved in:
-    {os.getcwd() + os.sep + filename}
-    '''    )
-    
     with open(os.getcwd() + os.sep + filename, "rb") as file:
         btn = st.download_button( label="Download icon",
                                  data=file,
