@@ -42,7 +42,7 @@ if __name__ == "__main__":
     
     filename = 'molecular-icon' + '.png'
     
-    image = icon_print(smiles, name = filename, rdkit_img = False, 
+    image = icon_print(smiles, name = 'molecular-icon', rdkit_img = False, 
                    single_bonds = single_bonds, remove_H = reomve_H, save=True)
     
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
@@ -53,7 +53,9 @@ if __name__ == "__main__":
     {os.getcwd() + os.sep + filename}
     '''    )
     
-    with open(filename, "rb") as file:
+    st.write(os.listdir(os.getcwd()))
+    
+    with open(os.getcwd() + os.sep + filename, "rb") as file:
         btn = st.download_button( label="Download icon",
                                  data=file,
                                  file_name=filename,
