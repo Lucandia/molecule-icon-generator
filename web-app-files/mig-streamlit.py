@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Aug 31 02:56:08 2022
+
+@author: monar
+"""
+
+import streamlit as st
+from molecules_icon_generator import icon_print 
+import cirpy
+from cirpy import Molecule
+import os
+import cv2
+
+
+if __name__ == "__main__":
+    
+    st.write('''
+    # Molecule-icons generator!
+    ''')
+    
+    
+    input_type = st.selectbox("Create your icon by", 
+                 ['smiles', 'name', 'cas_number', 'stdinchi'], 
+                 help= 'Chose the input info of your moleculs')
+    
+    input_string = st.text_input('Input informations', "CC(=O)Nc1ccc(cc1)O" )
+    # name = st.text_input('create by NAME:', "paracetamol" )
+    
+    if input_type == 'name':
+        input_string = cirpy.resolve(input_string, 'smiles')
+    mol = Molecule(input_string)   
+    iupac = mol.iupac_name
+    smiles = mol.smiles
+
+    single_bonds = st.checkbox('Draw just single_bonds')
+    remove_H = st.checkbox('remove all Hydrogens') 
+    
+    filename = 'molecular-icon' + '.png'
+    
+    image = icon_print(smiles, name = 'molecular-icon', rdkit_img = False, 
+                   single_bonds = single_bonds, remove_H = remove_H, save=True)
+    
+    im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
+    st.image(im_rgba, caption = 'Iupac name: ' + iupac, channels = 'RGBA')
+    
+    with open(os.getcwd() + os.sep + filename, "rb") as file:
+        btn = st.download_button( label="Download icon",
+                                 data=file,
+                                 file_name=filename,
+                                 mime="image/png" )
+
+
+
+    
