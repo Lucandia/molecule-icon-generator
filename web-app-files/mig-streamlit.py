@@ -13,6 +13,8 @@ import cv2
 import sys
 sys.path.insert(1, "../") 
 st.write(os.getcwd())
+st.write(os.listdir())
+st.write(os.listdir('/app/molecule-icon-generator'))
 import molecules_icon_generator as mig
 
 
