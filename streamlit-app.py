@@ -10,15 +10,13 @@ import cirpy
 from cirpy import Molecule
 import os
 import cv2
-st.write(os.getcwd())
-st.write(os.listdir())
 import molecules_icon_generator as mig
 
 
 if __name__ == "__main__":
     
     # select the folder with the atom icons:
-    atom_icon_dir = "../base-icons"
+    atom_icon_dir = "base-icons/"
     icon_map = mig.load_icons(atom_icon_dir)
     
     st.write('''
