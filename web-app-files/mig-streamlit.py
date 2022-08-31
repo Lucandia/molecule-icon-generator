@@ -35,21 +35,26 @@ if __name__ == "__main__":
 
     single_bonds = st.checkbox('Draw just single_bonds')
     remove_H = st.checkbox('remove all Hydrogens') 
+    rdkit_draw = st.checkbox('show rdkit structure') 
     
     filename = 'molecular-icon' + '.png'
     
-    image = icon_print(smiles, name = 'molecular-icon', rdkit_img = False, 
+    image = icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw, 
                    single_bonds = single_bonds, remove_H = remove_H, save=True)
     
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
-    st.image(im_rgba, caption = 'Iupac name: ' + iupac, channels = 'RGBA')
+    img_list = [im_rgba]
+    caption_list = 'Iupac name: ' + iupac
+    
+    if rdkit_draw:
+        rdkit_img = cv2.imread(os.getcwd() + os.sep + "molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
+        img_list.append(rdkit_img)
+        caption_list.append('Rdkit 2D conformation')
+        
+    st.image(img_list, caption = caption_list, channels = 'RGBA', use_column_width=True,)
     
     with open(os.getcwd() + os.sep + filename, "rb") as file:
         btn = st.download_button( label="Download icon",
                                  data=file,
                                  file_name=filename,
                                  mime="image/png" )
-
-
-
-    
