@@ -10,6 +10,7 @@ from molecules_icon_generator import icon_print
 import cirpy
 from cirpy import Molecule
 import os
+import cv2
 
 
 if __name__ == "__main__":
@@ -44,7 +45,8 @@ if __name__ == "__main__":
     image = icon_print(smiles, name = filename, rdkit_img = False, 
                    single_bonds = single_bonds, remove_H = reomve_H, save=True)
     
-    st.image(image, caption = 'Iupac name: ' + iupac, channels = 'BGR')
+    im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
+    st.image(im_rgba, caption = 'Iupac name: ' + iupac, channels = 'RGBA')
     
     st.write(f'''
     Image saved in:
