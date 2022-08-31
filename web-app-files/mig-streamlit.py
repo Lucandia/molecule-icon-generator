@@ -12,6 +12,7 @@ import os
 import cv2
 import sys
 sys.path.insert(1, "../") 
+st.write(os.getcwd())
 import molecules_icon_generator as mig
 
 
