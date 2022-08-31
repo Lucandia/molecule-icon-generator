@@ -11,7 +11,7 @@ from cirpy import Molecule
 import os
 import cv2
 import sys
-sys.path.append('../')
+sys.path.append('../molecules_icon_generator.py')
 import molecules_icon_generator as mig
 
 
