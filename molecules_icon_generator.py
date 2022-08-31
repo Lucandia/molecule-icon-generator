@@ -10,7 +10,7 @@ import cv2
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from rdkit.Chem.Draw import MolToImageFile
+from rdkit.Chem import Draw
 import math
 import itertools
 import argparse
@@ -41,16 +41,18 @@ def add_image(src, new, position):
 def add_bond(src, bond_type, degree, position):
     new_bond = rotate_image(bond_type.copy(), degree)
     add_image(src, new_bond, position)
+
+def load_icons (folder, resize_dim = (300,300)):
+    icon_map = dict()
+    for file in os.listdir(folder):
+        file_img = cv2.imread(folder + os.sep + file, cv2.IMREAD_UNCHANGED)
+        file_img = cv2.resize(file_img, resize_dim, interpolation = cv2.INTER_AREA)
+        icon_map [file.split('.')[0]] = file_img
+    return icon_map
   
 # alpha channel too
 blank_image = np.zeros((3500,3500,4), np.uint8)
-
-resize_dim = (300, 300)
-icon_map = dict()
-for file in os.listdir(atom_icon_dir):
-    file_img = cv2.imread(atom_icon_dir + os.sep + file, cv2.IMREAD_UNCHANGED)
-    file_img = cv2.resize(file_img, resize_dim, interpolation = cv2.INTER_AREA)
-    icon_map [file.split('.')[0]] = file_img
+icon_map = load_icons (atom_icon_dir)
 
 def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_img = False, 
                single_bonds = False, remove_H = False, verbose=False, save=True):
@@ -116,12 +118,11 @@ def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_im
         add_image(img, icon_map[atom], (atom_map[i][0], atom_map[i][1] ))
     
     if rdkit_img:
-        MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
+        rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
     if save:
         cv2.imwrite(directory + os.sep + name + ".png", img) 
     print('\033[0;32m' + name +' completed' + '\033[0;0;m')
     return img
-
 
 def parse():
     # create a parser for command line
