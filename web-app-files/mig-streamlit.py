@@ -6,19 +6,24 @@ Created on Wed Aug 31 02:56:08 2022
 """
 
 import streamlit as st
-from molecules_icon_generator import icon_print 
 import cirpy
 from cirpy import Molecule
 import os
 import cv2
+import sys
+sys.path.append('../')
+import molecules_icon_generator as mig
 
 
 if __name__ == "__main__":
     
+    # select the folder with the atom icons:
+    atom_icon_dir = "../base-icons"
+    icon_map = mig.load_icons(atom_icon_dir)
+    
     st.write('''
     # Molecule-icons generator!
     ''')
-    
     
     input_type = st.selectbox("Create your icon by", 
                  ['smiles', 'name', 'cas_number', 'stdinchi'], 
@@ -39,8 +44,9 @@ if __name__ == "__main__":
     
     filename = 'molecular-icon' + '.png'
     
-    image = icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw, 
-                   single_bonds = single_bonds, remove_H = remove_H, save=True)
+    image = mig.icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw, 
+                            single_bonds = single_bonds, remove_H = remove_H, save=True,
+                            symbol_img_dict = icon_map))
     
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
     img_list = [im_rgba]
