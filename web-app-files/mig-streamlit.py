@@ -11,14 +11,14 @@ from cirpy import Molecule
 import os
 import cv2
 import sys
-sys.path.append('..//')
+sys.path.insert(1, "../") 
 import molecules_icon_generator as mig
 
 
 if __name__ == "__main__":
     
     # select the folder with the atom icons:
-    atom_icon_dir = "/app/molecule-icon-generator/base-icons"
+    atom_icon_dir = "../base-icons"
     icon_map = mig.load_icons(atom_icon_dir)
     
     st.write('''
