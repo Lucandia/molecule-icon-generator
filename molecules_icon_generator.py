@@ -55,7 +55,8 @@ blank_image = np.zeros((3500,3500,4), np.uint8)
 icon_map = load_icons (atom_icon_dir)
 
 def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_img = False, 
-               single_bonds = False, remove_H = False, verbose=False, save=True):
+               single_bonds = False, remove_H = False, verbose=False, save=True,
+               symbol_img_dict = icon_map):
     img = blank_image.copy()
     mol = Chem.MolFromSmiles(SMILES)
     if not remove_H:
@@ -95,9 +96,9 @@ def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_im
             myradians = math.atan2(y1-y2, x2-x1)
             mydegrees = math.degrees(myradians)
             b_type = BOND.GetBondType()
-            bond_img = icon_map ['single']
+            bond_img = symbol_img_dict ['single']
             if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
-                bond_img = icon_map ['double']
+                bond_img = symbol_img_dict ['double']
             elif rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
                 conditions = [atom1 not in aromatic_index, atom2 not in aromatic_index,
                               atom_type_map[atom1] != 'O', atom_type_map[atom2] != 'O',
@@ -105,17 +106,17 @@ def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_im
                               atom_type_map[atom1] != 'N' or atom_bond_map[atom1] < 3,
                               atom_type_map[atom2] != 'N' or atom_bond_map[atom2] < 3]
                 if all(conditions):
-                    bond_img = icon_map ['double']
+                    bond_img = symbol_img_dict ['double']
                     aromatic_index.add(atom1)
                     aromatic_index.add(atom2)
             elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
-                bond_img = icon_map ['triple']
+                bond_img = symbol_img_dict ['triple']
             add_bond(img, bond_img, mydegrees, position)     
                 
     for i in reversed(range(len(mol.GetAtoms()))):
         atom = mol.GetAtoms()[i]
         atom = atom.GetSymbol()
-        add_image(img, icon_map[atom], (atom_map[i][0], atom_map[i][1] ))
+        add_image(img, symbol_img_dict[atom], (atom_map[i][0], atom_map[i][1] ))
     
     if rdkit_img:
         rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
