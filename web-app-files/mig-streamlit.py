@@ -10,8 +10,6 @@ import cirpy
 from cirpy import Molecule
 import os
 import cv2
-import sys
-sys.path.insert(1, "../") 
 st.write(os.getcwd())
 st.write(os.listdir())
 st.write(os.listdir('/app/molecule-icon-generator'))
