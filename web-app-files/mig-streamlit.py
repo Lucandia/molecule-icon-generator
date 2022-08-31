@@ -12,7 +12,8 @@ import os
 import cv2
 st.write(os.getcwd())
 st.write(os.listdir())
-from molecule_icon_generator.molecules_icon_generator import load_icons
+import importlib
+mig = importlib.import_module("molecules_icon_generator")
 import molecules_icon_generator as mig
 
 
