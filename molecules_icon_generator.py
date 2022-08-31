@@ -115,6 +115,9 @@ def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_im
         add_image(img, icon_map[atom], (atom_map[i][0], atom_map[i][1] ))
     
     if rdkit_img:
+        # import rdkit.Chem.Draw here beacuse it gives error on streamlit
+        # the rdkit_img option is useless on streamlit
+        from rdkit.Chem import Draw
         rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
     if save:
         cv2.imwrite(directory + os.sep + name + ".png", img) 
