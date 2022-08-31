@@ -53,8 +53,6 @@ if __name__ == "__main__":
     {os.getcwd() + os.sep + filename}
     '''    )
     
-    st.write(os.listdir(os.getcwd()))
-    
     with open(os.getcwd() + os.sep + filename, "rb") as file:
         btn = st.download_button( label="Download icon",
                                  data=file,
