@@ -33,12 +33,8 @@ if __name__ == "__main__":
     iupac = mol.iupac_name
     smiles = mol.smiles
     
-    options = st.multiselect(
-     'Additional options',
-     ['just single bonds', 'remove H'] )
-    
-    single_bonds  = "just single bonds" in options
-    reomve_H  = "remove H" in options
+    single_bonds = st.checkbox('Draw just single_bonds')
+    reomve_H = st.checkbox('reomve all Hydrogens') 
     
     filename = 'molecular-icon' + '.png'
     
