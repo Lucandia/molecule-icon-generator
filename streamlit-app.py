@@ -23,6 +23,11 @@ if __name__ == "__main__":
     # Molecule-icons generator!
     ''')
     
+    st.write('''
+    Generate icons of molecules from Smiles, Names, Cas-number or standard Inchi.
+    For more options, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git) with the python module
+    ''')
+    
     input_type = st.selectbox("Create your icon by", 
                  ['smiles', 'name', 'cas_number', 'stdinchi'], 
                  help= 'Chose the input info of your moleculs')
@@ -65,3 +70,7 @@ if __name__ == "__main__":
                                  data=file,
                                  file_name=filename,
                                  mime="image/png" )
+    
+    st.write('''
+    Thanks for using the Molecules icons generators!
+    ''')
