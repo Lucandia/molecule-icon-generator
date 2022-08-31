@@ -16,7 +16,8 @@ import itertools
 import argparse
 import os
  
-atom_icon_dir = "/your/path/to/base-icons/"
+# change the Path below with your path tho the icons
+atom_icon_dir = "molecule-icon-generator/base-icons/"
 
 def rotate_image(image, angle):
   image_center = tuple(np.array(image.shape[1::-1]) / 2)
