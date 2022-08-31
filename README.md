@@ -2,11 +2,11 @@
 <img src="example.png" width=35% height=35%>
 Generate nice icons of molecules from SMILES.
 
+This program takes some icons of atoms and bonds (provided with the code) and following the topology of an SMILES chemical structure combine the into an icon (output: 3000 x 3000 pixels). 
+
 ## Try the web app:
 
 [Molecules-icons generator web app](https://lmonari5-molecule-icon-generator-streamlit-app-qgtak1.streamlitapp.com/) powered by streamlit
-
-This program takes some icons of atoms and bonds (provided with the code) and following the topology of an SMILES chemical structure combine the into an icon (output: 3000 x 3000 pixels). 
 
 ## Requirements
 - rdkit (`pip install rdkit`)
