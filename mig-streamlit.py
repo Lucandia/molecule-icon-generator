@@ -52,6 +52,12 @@ if __name__ == "__main__":
     Image saved in:
     {os.getcwd() + os.sep + filename}
     '''    )
+    
+    with open(filename, "rb") as file:
+    btn = st.download_button( label="Download icon",
+                             data=file,
+                             file_name=filename,
+                             mime="image/png" )
 
 
 
