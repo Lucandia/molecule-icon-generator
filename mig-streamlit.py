@@ -32,14 +32,14 @@ if __name__ == "__main__":
     mol = Molecule(input_string)   
     iupac = mol.iupac_name
     smiles = mol.smiles
-    
+
     single_bonds = st.checkbox('Draw just single_bonds')
-    reomve_H = st.checkbox('reomve all Hydrogens') 
+    remove_H = st.checkbox('remove all Hydrogens') 
     
     filename = 'molecular-icon' + '.png'
     
     image = icon_print(smiles, name = 'molecular-icon', rdkit_img = False, 
-                   single_bonds = single_bonds, remove_H = reomve_H, save=True)
+                   single_bonds = single_bonds, remove_H = remove_H, save=True)
     
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
     st.image(im_rgba, caption = 'Iupac name: ' + iupac, channels = 'RGBA')
