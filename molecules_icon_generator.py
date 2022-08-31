@@ -53,7 +53,7 @@ for file in os.listdir(atom_icon_dir):
     icon_map [file.split('.')[0]] = file_img
 
 def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_img = False, 
-               single_bonds = False, remove_H = False, verbose=False):
+               single_bonds = False, remove_H = False, verbose=False, save=True):
     img = blank_image.copy()
     mol = Chem.MolFromSmiles(SMILES)
     if not remove_H:
@@ -117,8 +117,10 @@ def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_im
     
     if rdkit_img:
         rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
-    cv2.imwrite(directory + os.sep + name + ".png", img) 
+    if save:
+        cv2.imwrite(directory + os.sep + name + ".png", img) 
     print('\033[0;32m' + name +' completed' + '\033[0;0;m')
+    return img
 
 
 def parse():
