@@ -1,5 +1,0 @@
-rdkit
-opencv-python-headless
-argparse
-numpy
-cirpy
