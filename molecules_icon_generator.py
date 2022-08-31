@@ -10,6 +10,7 @@ import cv2
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem
+from rdkit.Chem import Draw
 import math
 import itertools
 import argparse
