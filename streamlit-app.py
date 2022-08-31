@@ -56,7 +56,7 @@ if __name__ == "__main__":
         img_list.append(rdkit_img)
         caption_list.append('Rdkit 2D conformation')
         
-    st.image(img_list, caption = caption_list,  width=150,  channels = 'RGBA')
+    st.image(img_list, caption = caption_list,  width=300,  channels = 'RGBA')
     
     with open(os.getcwd() + os.sep + filename, "rb") as file:
         btn = st.download_button( label="Download icon",
