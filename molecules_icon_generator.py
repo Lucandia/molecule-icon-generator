@@ -71,13 +71,13 @@ def icon_print(SMILES, name = 'molecule_icon', directory = os.getcwd(), rdkit_im
         positions = mol.GetConformer().GetAtomPosition(i)
         atom_symbol = atom.GetSymbol()
         x = int( positions.x * 150 + img.shape[1]//2 )
-        y = int( positions.y * 150 + img.shape[0]//2 )
-        atom_map [i] = (x,y)
+        y = int( positions.y * 150 + img.shape[0]//2 ) 
+        atom_map [i] = (x, -y) # y axis of an image is the inverse
         atom_bonds = rdkit.Chem.rdchem.Atom.GetBonds(atom)
         atom_bond_map [i] = len(atom_bonds)
         atom_type_map [i] = atom_symbol
         if verbose:
-            print(atom_symbol, x, y, positions.z)
+            print(atom_symbol, x, y)
     
     bonds_list = list(itertools.combinations(list(atom_map.keys()), 2))
     aromatic_index = set()
