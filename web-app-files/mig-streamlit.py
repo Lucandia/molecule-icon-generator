@@ -12,7 +12,7 @@ import os
 import cv2
 st.write(os.getcwd())
 st.write(os.listdir())
-st.write(os.listdir('/app/molecule-icon-generator'))
+from molecules_icon_generator import load_icons
 import molecules_icon_generator as mig
 
 
