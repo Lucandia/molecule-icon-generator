@@ -49,14 +49,16 @@ if __name__ == "__main__":
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
     img_list = [im_rgba]
     caption_list = ['Iupac name: ' + iupac]
+    column_widt = True 
     
     if rdkit_draw:
         rdkit_img = cv2.imread(os.getcwd() + os.sep + "molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
         rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
         img_list.append(rdkit_img)
         caption_list.append('Rdkit 2D conformation')
+        column_widt = False
         
-    st.image(img_list, caption = caption_list,  width=300,  channels = 'RGBA')
+    st.image(img_list, caption = caption_list,  width=500,  channels = 'RGBA', use_column_width = column_widt )
     
     with open(os.getcwd() + os.sep + filename, "rb") as file:
         btn = st.download_button( label="Download icon",
