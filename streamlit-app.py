@@ -52,6 +52,7 @@ if __name__ == "__main__":
     
     if rdkit_draw:
         rdkit_img = cv2.imread(os.getcwd() + os.sep + "molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
+        rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
         img_list.append(rdkit_img)
         caption_list.append('Rdkit 2D conformation')
         
