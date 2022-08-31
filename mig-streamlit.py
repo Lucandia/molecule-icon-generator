@@ -10,8 +10,6 @@ from molecules_icon_generator import icon_print
 import cirpy
 from cirpy import Molecule
 import os
-from io import BytesIO
-import PIL
 
 
 if __name__ == "__main__":
