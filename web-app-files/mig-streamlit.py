@@ -46,7 +46,7 @@ if __name__ == "__main__":
     
     image = mig.icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw, 
                             single_bonds = single_bonds, remove_H = remove_H, save=True,
-                            symbol_img_dict = icon_map))
+                            symbol_img_dict = icon_map)
     
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
     img_list = [im_rgba]
