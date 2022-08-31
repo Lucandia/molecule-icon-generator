@@ -48,7 +48,7 @@ if __name__ == "__main__":
     
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
     img_list = [im_rgba]
-    caption_list = 'Iupac name: ' + iupac
+    caption_list = ['Iupac name: ' + iupac]
     
     if rdkit_draw:
         rdkit_img = cv2.imread(os.getcwd() + os.sep + "molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
