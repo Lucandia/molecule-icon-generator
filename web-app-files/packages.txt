@@ -1,1 +1,2 @@
-libXrender
+libfontconfig1 
+libxrender1
