@@ -54,10 +54,10 @@ if __name__ == "__main__":
     '''    )
     
     with open(filename, "rb") as file:
-    btn = st.download_button( label="Download icon",
-                             data=file,
-                             file_name=filename,
-                             mime="image/png" )
+        btn = st.download_button( label="Download icon",
+                                 data=file,
+                                 file_name=filename,
+                                 mime="image/png" )
 
 
 
