@@ -59,9 +59,11 @@ if __name__ == "__main__":
     filename = 'molecular-icon' + '.png'
 
     try:
-        image = mig.icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw,
-                                single_bonds = single_bonds, remove_H = remove_H, save=True,
-                                symbol_img_dict = icon_map)
+        pos_multi = st.slider('Atom position multiplier', 1, 300, 150,
+                help='Multiply the position of the atoms with respect to the 2D structure. Default: 150')
+        image = mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
+                                single_bonds=single_bonds, remove_H=remove_H, save=True,
+                                symbol_img_dict=icon_map, position_multiplier=pos_multi)
     except Exception as e:
         st.write('''
         Probably Rdkit failed in building the structure of the molecule

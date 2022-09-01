@@ -63,7 +63,7 @@ def add_bond(src, bond_type, degree, position):
 
 def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=False,
                single_bonds=False, remove_H=False, verbose=False, save=True,
-               symbol_img_dict=icon_map):
+               symbol_img_dict=icon_map, position_multiplier=150):
     mol = Chem.MolFromSmiles(SMILES)
     if not remove_H:
         mol = Chem.AddHs(mol)
@@ -77,8 +77,8 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
         positions = mol.GetConformer().GetAtomPosition(i)
         atom_symbol = atom.GetSymbol()
         # 150 is a nice value to obtain big icons
-        x = int(positions.x * 150)
-        y = int(positions.y * 150)
+        x = int(positions.x * position_multiplier)
+        y = int(positions.y * position_multiplier)
         atom_map[i] = (x, -y)  # y axis of an image is the inverse
         atom_bonds = rdkit.Chem.rdchem.Atom.GetBonds(atom)
         atom_bond_map[i] = len(atom_bonds)
