@@ -140,6 +140,8 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
         # add dimension to center with respect to the center of the blank image
         atom_x = atom_map[i][0] + dimension // 2
         atom_y = atom_map[i][1] + dimension // 2
+        if atom not in symbol_img_dict:
+            atom = 'other'
         add_image(img, symbol_img_dict[atom], (atom_x, atom_y))
 
     if rdkit_img:
