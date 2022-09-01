@@ -55,7 +55,7 @@ if __name__ == "__main__":
             smiles = input_string
             iupac = 'not found'
         else:
-            raise SystemExit()
+            st.stop()
     
     filename = 'molecular-icon' + '.png'
     image = mig.icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw, 
