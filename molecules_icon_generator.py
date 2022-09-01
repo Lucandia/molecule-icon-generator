@@ -88,7 +88,10 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
 
     # get the maximum position from the atom (positive or negative
     max_pos = max([abs(pos) for pos in list(itertools.chain(*list(atom_map.values())))])
-    dimension = int(max_pos * 3)
+    # to the max position we have to add width of the atom icons
+    max_tot_pos = max pos + list(symbol_img_dict.values())[0].shape[1]
+    # multiply for 2 because the max position is considered from the center of the image
+    dimension = int(max_tot_pos * 2)
     # base black image, four channel to include alpha channel
     img_rgb = np.zeros((dimension, dimension, 3), np.uint8)
     # make the image white
