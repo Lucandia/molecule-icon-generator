@@ -49,8 +49,6 @@ if __name__ == "__main__":
         The cirpy python library is not able to resolve your input {input_type}
         You can use the smiles to skip the cirpy use.
         ''')
-        if st.button('See full error'):
-            st.write(e)
         if input_type == 'smiles':
             smiles = input_string
             iupac = 'not found'
@@ -59,9 +57,18 @@ if __name__ == "__main__":
     if not iupac:
         iupac = 'not found'
     filename = 'molecular-icon' + '.png'
-    image = mig.icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw, 
-                            single_bonds = single_bonds, remove_H = remove_H, save=True,
-                            symbol_img_dict = icon_map)
+
+    try:
+        image = mig.icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw,
+                                single_bonds = single_bonds, remove_H = remove_H, save=True,
+                                symbol_img_dict = icon_map)
+    except Exception as e:
+        st.write('''
+        Probably Rdkit failed in building the structure of the molecule
+        ''')
+        if st.button('See full error'):
+            st.write(e)
+        st.stop()
     
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
     img_list = [im_rgba]
