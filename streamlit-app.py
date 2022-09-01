@@ -62,7 +62,7 @@ if __name__ == "__main__":
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               The Size of the atom icons will be kept the same, thus a higher multiplier leads to smaller 
                               images and higher resolution. Default: 150''')
-        icon_map = mig.load_icons(atom_icon_dir, (icon_size, icon_size)
+        icon_map = mig.load_icons(atom_icon_dir, (icon_size, icon_size))
         image = mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
                                single_bonds=single_bonds, remove_H=remove_H, save=True,
                                symbol_img_dict=icon_map, position_multiplier=pos_multi)
