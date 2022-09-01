@@ -50,7 +50,9 @@ if __name__ == "__main__":
         ''')
         if input_type != 'smiles':
             st.stop()
-            
+    if not st.button('run'):
+        st.stop()
+
     if input_type == 'smiles': # if the input is a smile, use it directly ignoring the cirpy smiles
             smiles = input_string
     filename = 'molecular-icon' + '.png'
