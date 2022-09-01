@@ -56,7 +56,8 @@ if __name__ == "__main__":
             iupac = 'not found'
         else:
             st.stop()
-    
+    if not iupac:
+        iupac = 'not found'
     filename = 'molecular-icon' + '.png'
     image = mig.icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw, 
                             single_bonds = single_bonds, remove_H = remove_H, save=True,
