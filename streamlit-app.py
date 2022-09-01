@@ -33,20 +33,31 @@ if __name__ == "__main__":
                  help= 'Chose the input info of your moleculs')
     
     input_string = st.text_input('Input informations', "CC(=O)Nc1ccc(cc1)O" )
-    # name = st.text_input('create by NAME:', "paracetamol" )
-    
-    if input_type == 'name':
-        input_string = cirpy.resolve(input_string, 'smiles')
-    mol = Molecule(input_string)   
-    iupac = mol.iupac_name
-    smiles = mol.smiles
 
     single_bonds = st.checkbox('Draw just single_bonds')
     remove_H = st.checkbox('remove all Hydrogens') 
-    rdkit_draw = st.checkbox('show rdkit structure') 
+    rdkit_draw = st.checkbox('show rdkit structure')
+
+    try:
+        if input_type == 'name':
+            input_string = cirpy.resolve(input_string, 'smiles')
+        mol = Molecule(input_string)
+        iupac = mol.iupac_name
+        smiles = mol.smiles
+    except Exception as e:
+        st.write(f'''
+        The cirpy python library is not able to resolve your input {input_type}
+        You can use the smiles to skip the cirpy use.
+        ''')
+        if st.button('See full error'):
+            st.write(e)
+        if input_type == 'smiles':
+            smiles = input_string
+            iupac = 'not found'
+        else:
+            exit
     
     filename = 'molecular-icon' + '.png'
-    
     image = mig.icon_print(smiles, name = 'molecular-icon', rdkit_img = rdkit_draw, 
                             single_bonds = single_bonds, remove_H = remove_H, save=True,
                             symbol_img_dict = icon_map)
