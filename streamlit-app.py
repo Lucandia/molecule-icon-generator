@@ -11,13 +11,10 @@ from cirpy import Molecule
 import os
 import cv2
 import molecules_icon_generator as mig
-
+# select the folder with the atom icons:
+atom_icon_dir = "base-icons/"
+    
 if __name__ == "__main__":
-
-    # select the folder with the atom icons:
-    atom_icon_dir = "base-icons/"
-    icon_map = mig.load_icons(atom_icon_dir)
-
     st.write('''
     # Molecule-icons generator!
     ''')
@@ -37,38 +34,44 @@ if __name__ == "__main__":
     remove_H = st.checkbox('remove all Hydrogens')
     rdkit_draw = st.checkbox('show rdkit structure')
 
+    # catch error when using the cirpy library
     try:
         if input_type == 'name':
             input_string = cirpy.resolve(input_string, 'smiles')
         mol = Molecule(input_string)
         iupac = mol.iupac_name
+        if not iupac:
+            iupac = 'not found'
         smiles = mol.smiles
     except Exception as e:
         st.write(f'''
-        The cirpy python library is not able to resolve your input {input_type}
-        You can use the smiles to skip the cirpy use.
+        The cirpy python library is not able to resolve your input {input_type}.
+        You can use the smiles input to skip the cirpy library.
         ''')
-        if input_type == 'smiles':
-            smiles = input_string
-            iupac = 'not found'
-        else:
+        if input_type != 'smiles':
             st.stop()
-    if not iupac:
-        iupac = 'not found'
+            
+    if input_type == 'smiles': # if the input is a smile, use it directly ignoring the cirpy smiles
+            smiles = input_string
     filename = 'molecular-icon' + '.png'
 
     try:
+        icon_size = st.slider('Atom size', 100, 500, 300,
+                              help='''Atom icons size in pixel. Default: 300''')
         pos_multi = st.slider('Atom position multiplier', 90, 260, 150,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               The Size of the atom icons will be kept the same, thus a higher multiplier leads to smaller 
                               images and higher resolution. Default: 150''')
+        icon_map = mig.load_icons(atom_icon_dir, (icon_size, icon_size)
         image = mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
                                single_bonds=single_bonds, remove_H=remove_H, save=True,
                                symbol_img_dict=icon_map, position_multiplier=pos_multi)
     except Exception as e:
         st.write('''
-        Probably Rdkit failed in building the structure of the molecule
+        Probably Rdkit failed in building the structure of the molecule.
         ''')
+        if input_type != 'smiles':
+            st.write(f'Try to use the smiles of the molecule instead of {input_type}')
         if st.button('See full error'):
             st.write(e)
         st.stop()
