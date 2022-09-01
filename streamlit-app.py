@@ -74,8 +74,9 @@ if __name__ == "__main__":
         ''')
         if input_type != 'smiles':
             st.write(f'Try to use the smiles of the molecule instead of {input_type}')
-        if st.button('See full error'):
-            st.write(e)
+        st.write(f'''Full error:
+
+        {e}''')
         st.stop()
 
     im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
