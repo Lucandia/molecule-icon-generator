@@ -50,9 +50,7 @@ if __name__ == "__main__":
         ''')
         if input_type != 'smiles':
             st.stop()
-    if not st.button('run'):
-        st.stop()
-
+    
     if input_type == 'smiles': # if the input is a smile, use it directly ignoring the cirpy smiles
             smiles = input_string
     filename = 'molecular-icon' + '.png'
@@ -64,6 +62,8 @@ if __name__ == "__main__":
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               The Size of the atom icons will be kept the same, thus a higher multiplier leads to smaller 
                               images and higher resolution. Default: 150''')
+        if not st.button('run'):
+            st.stop()
         icon_map = mig.load_icons(atom_icon_dir, (icon_size, icon_size))
         image = mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
                                single_bonds=single_bonds, remove_H=remove_H, save=True,
