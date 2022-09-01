@@ -59,7 +59,7 @@ if __name__ == "__main__":
     filename = 'molecular-icon' + '.png'
 
     try:
-        pos_multi = st.slider('Atom position multiplier', 1, 300, 150,
+        pos_multi = st.slider('Atom position multiplier', 90, 260, 150,
                 help='Multiply the position of the atoms with respect to the 2D structure. Default: 150')
         image = mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
                                 single_bonds=single_bonds, remove_H=remove_H, save=True,
