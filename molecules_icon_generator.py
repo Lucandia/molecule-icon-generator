@@ -57,11 +57,10 @@ def add_image(src, new, position, overwrite=True):
 
 
 def add_bond(src, bond_type, degree, position, length):
-    new_bond = bond_type.copy()
     # resize the bond length to make it reach the atoms center
-    new_bond = cv2.resize(new_bond, (length, new_bond.shape[0]), interpolation=cv2.INTER_AREA)
-    new_bond = rotate_image(new_bond, degree)
-    add_image(src, new_bond, position)
+    resized_bond = cv2.resize(bond_type.copy(), (length, new_bond.shape[0]), interpolation=cv2.INTER_AREA)
+    rotated_bond = rotate_image(resized_bond, degree)
+    add_image(src, rotated_bond, position)
 
 
 def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=False,
