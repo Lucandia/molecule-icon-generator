@@ -23,7 +23,7 @@ def load_icons(folder, resize_dim=(300, 300)):
     icon_map = dict()
     for file in os.listdir(folder):
         file_img = cv2.imread(folder + os.sep + file, cv2.IMREAD_UNCHANGED)
-        file_img = cv2.resize(file_img, resize_dim, interpolation=cv2.INTER_AREA)
+        file_img = cv2.resize(file_img, resize_dim) # , interpolation=cv2.INTER_AREA
         icon_map[file.split('.')[0]] = file_img
     return icon_map
 
@@ -58,7 +58,7 @@ def add_image(src, new, position, overwrite=True):
 
 def add_bond(src, bond_type, degree, position, length):
     # resize the bond length to make it reach the atoms center
-    resized_bond = cv2.resize(bond_type.copy(), (length, bond_type.shape[0]), interpolation=cv2.INTER_AREA)
+    resized_bond = cv2.resize(bond_type.copy(), (length, bond_type.shape[0])) # , interpolation=cv2.INTER_AREA
     rotated_bond = rotate_image(resized_bond, degree)
     add_image(src, rotated_bond, position)
 
