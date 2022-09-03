@@ -58,11 +58,7 @@ def add_image(src, new, position, overwrite=True):
 
 def add_bond(src, bond_type, degree, position, length):
     # resize the bond length to make it reach the atoms center
-    heigth = bond_type.shape[0]
-    if length > heigth * 1.5:
-        # add some thicknes otherwise the rotation of the image could fail
-        heigth = int( heigth * (1 + length/heigth/10) )
-    resized_bond = cv2.resize(bond_type.copy(), (length, heigth), interpolation=cv2.INTER_AREA)
+    resized_bond = cv2.resize(bond_type.copy(), (length, length), interpolation=cv2.INTER_AREA)
     # the resize method fail, thus I extend the image array manually to match the lenght of the bond
     # missing_length = length - bond_type.shape[0]
     #  one_column = bond_type[:, [bond_type.shape[1]//2]] # take a middle column
