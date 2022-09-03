@@ -61,9 +61,10 @@ def add_bond(src, bond_type, degree, position, length):
     # resized_bond = cv2.resize(bond_type.copy(), (length, bond_type.shape[0]), interpolation=cv2.INTER_AREA)
     # the resize method fail, thus I extend the image array manually to match the lenght of the bond
     missing_length = length - bond_type.shape[0]
-    one_column = bond_type[:, 0]
-    missing_array = np.repeat(one_column, missing_length)
-    resized_bond = np.concatenate((bond_type, missing_array), axis=1)
+    one_column = bond_type[:, [0]]
+    array_list = [one_column] * missing_length
+    array_list.append(bond_type)
+    resized_bond = np.hstack(array_list)
     rotated_bond = rotate_image(resized_bond, degree)
     add_image(src, rotated_bond, position)
 
