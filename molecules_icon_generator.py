@@ -121,7 +121,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
             position = (mid_x, mid_y)
             myradians = math.atan2(y1 - y2, x2 - x1)
             mydegrees = math.degrees(myradians)
-            length = int(math.dist([X1, y1], [x2, y2]))
+            length = int(math.dist([x1, y1], [x2, y2]))
             b_type = BOND.GetBondType()
             bond_img = symbol_img_dict['single']
             if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
