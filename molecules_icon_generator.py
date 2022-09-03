@@ -103,6 +103,18 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
     # make alpha channel equal to 0
     img[:, :, 3] = np.zeros((dimension, dimension), np.uint8)
 
+    # add atoms (to start from the Hydrogens, the atom index must be reversed)
+    for i in reversed(range(len(mol.GetAtoms()))):
+        atom = mol.GetAtoms()[i]
+        atom = atom.GetSymbol()
+        # add dimension to center with respect to the center of the blank image
+        atom_x = atom_map[i][0] + dimension // 2
+        atom_y = atom_map[i][1] + dimension // 2
+        if atom not in symbol_img_dict:
+            atom = 'other'
+        add_image(img, symbol_img_dict[atom], (atom_x, atom_y))
+        
+    
     # add bond
     bonds_list = list(itertools.combinations(list(atom_map.keys()), 2))
     aromatic_index = set()
@@ -138,17 +150,8 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
             elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
                 bond_img = symbol_img_dict['triple']
             add_bond(img, bond_img, mydegrees, position, length)
-
-    # add atoms (to start from the Hydrogens, the atom index must be reversed)
-    for i in reversed(range(len(mol.GetAtoms()))):
-        atom = mol.GetAtoms()[i]
-        atom = atom.GetSymbol()
-        # add dimension to center with respect to the center of the blank image
-        atom_x = atom_map[i][0] + dimension // 2
-        atom_y = atom_map[i][1] + dimension // 2
-        if atom not in symbol_img_dict:
-            atom = 'other'
-        add_image(img, symbol_img_dict[atom], (atom_x, atom_y))
+            
+            
 
     if rdkit_img:
         rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
