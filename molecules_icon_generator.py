@@ -56,8 +56,11 @@ def add_image(src, new, position, overwrite=True):
     return src
 
 
-def add_bond(src, bond_type, degree, position):
-    new_bond = rotate_image(bond_type.copy(), degree)
+def add_bond(src, bond_type, degree, position, length):
+    new_bond = bond_type.copy()
+    # resize the bond length to make it reach the atoms center
+    new_bond = cv2.resize(new_bond, (length, new_bond.shape[0]), interpolation=cv2.INTER_AREA)
+    new_bond = rotate_image(new_bond, degree)
     add_image(src, new_bond, position)
 
 
@@ -118,6 +121,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
             position = (mid_x, mid_y)
             myradians = math.atan2(y1 - y2, x2 - x1)
             mydegrees = math.degrees(myradians)
+            length = int(math.dist([X1, y1], [x2, y2]))
             b_type = BOND.GetBondType()
             bond_img = symbol_img_dict['single']
             if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
@@ -134,7 +138,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
                     aromatic_index.add(atom2)
             elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
                 bond_img = symbol_img_dict['triple']
-            add_bond(img, bond_img, mydegrees, position)
+            add_bond(img, bond_img, mydegrees, position, length)
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
     for i in reversed(range(len(mol.GetAtoms()))):
