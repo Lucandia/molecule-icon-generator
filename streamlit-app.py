@@ -25,10 +25,15 @@ if __name__ == "__main__":
     ''')
 
     input_type = st.selectbox("Create your icon by",
-                              ['smiles', 'name', 'cas_number', 'stdinchi'],
+                              ['name', 'smiles', 'cas_number', 'stdinchi', 'stdinchikey'],
                               help='Chose the input info of your moleculs')
-
-    input_string = st.text_input('Input informations', "CC(=O)Nc1ccc(cc1)O")
+    def_dict = {'name': 'paracetamol',
+                'smiles': "CC(=O)Nc1ccc(cc1)O", 
+                'cas_number': '103-90-2'
+                'stdinchi': '1S/C8H9NO2/c1-6(10)9-7-2-4-8(11)5-3-7/h2-5,11H,1H3,(H,9,10)'
+                'stdinchikey': 'RZVAJINKPMORJF-UHFFFAOYSA-N'
+                
+    input_string = st.text_input(input_type, def_dict[input_type])
 
     single_bonds = st.checkbox('Draw just single_bonds')
     remove_H = st.checkbox('remove all Hydrogens')
