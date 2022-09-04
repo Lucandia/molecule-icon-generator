@@ -42,7 +42,8 @@ def rotate_image(image, angle):
 
 def add_image(src, new, position, overwrite=True):
     # position (x,y)
-    new_y, new_x = new.shape
+    new_x = new.shape[1]
+    new_y = new.shape[0]
     y_offset = position[1] - new_y // 2
     x_offset = position[0] - new_x // 2
     # overwrite the source array with the new image only if the alpha channel is equal to 0
