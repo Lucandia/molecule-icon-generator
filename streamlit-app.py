@@ -58,9 +58,9 @@ if __name__ == "__main__":
     try:
         icon_size = st.slider('Atom size', 100, 500, 300,
                               help='''Atom icons size in pixel. Default: 300''')
-        pos_multi = st.slider('Atom position multiplier', 50, 250, 150,
+        pos_multi = st.slider('Image size multiplier', 50, 250, 150,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
-                              A higher multiplier leads to smaller images but higher resolution. Default: 150''')
+                              A higher multiplier leads to higher resolution. Default: 150''')
         if not st.button('run'):
             st.stop()
         icon_map = mig.load_icons(atom_icon_dir, (icon_size, icon_size))
