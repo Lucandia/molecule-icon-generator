@@ -30,7 +30,7 @@ if __name__ == "__main__":
     def_dict = {'name': 'paracetamol',
                 'smiles': "CC(=O)Nc1ccc(cc1)O", 
                 'cas_number': '103-90-2',
-                'stdinchi': 'InChI=1S/C8H9NO2/c1-6(10)9-7-2-4-8(11)5-3-7/h2-5,11H,1H3,(H,9,10)/i2D,3D,4D,5D',
+                'stdinchi': 'InChI=1S/C8H9NO2/c1-6(10)9-7-2-4-8(11)5-3-7/h2-5,11H,1H3,(H,9,10)',
                 'stdinchikey': 'RZVAJINKPMORJF-UHFFFAOYSA-N'}
                 
     input_string = st.text_input(input_type + ' :', def_dict[input_type])
