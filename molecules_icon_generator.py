@@ -15,9 +15,11 @@ import math
 import itertools
 import argparse
 import os
+import sys
 
 # change the Path below with your path tho the icons
 atom_icon_dir = "base-icons/"
+
 
 def load_icons(folder, resize_dim=(300, 300)):
     icon_map = dict()
@@ -33,7 +35,7 @@ icon_map = load_icons(atom_icon_dir)
 
 
 def rotate_image(image, angle):
-    image_center = tuple(np.array(image.shape[1::-1]) / 2) # the '//' division gives error in getRotationMatrix2D
+    image_center = tuple(np.array(image.shape[1::-1]) / 2)  # the '//' division gives error in getRotationMatrix2D
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
     result = cv2.warpAffine(image, rot_mat, image.shape[1::-1])
     return result
@@ -56,17 +58,34 @@ def add_image(src, new, position, overwrite=True):
     return src
 
 
-def add_bond(src, bond_type, degree, position, length):
-    # resize the bond length to make it reach the atoms center
-    resized_bond = cv2.resize(bond_type.copy(), (length, length), interpolation=cv2.INTER_AREA)
-    # the resize method fail, thus I extend the image array manually to match the lenght of the bond
-    # missing_length = length - bond_type.shape[0]
-    #  one_column = bond_type[:, [bond_type.shape[1]//2]] # take a middle column
-    #  array_list = [one_column] * length
-    # array_list.append(bond_type)
-    # resized_bond = np.hstack(array_list)
-    rotated_bond = rotate_image(resized_bond, degree)
-    add_image(src, rotated_bond, position)
+def add_bond(src, bond_type, x1, y1, x2, y2, line_thickness):
+    start = np.array((x1, y1))
+    end = np.array((x2, y2))
+    d_space = int(line_thickness * 0.8)
+    t_space = int(line_thickness * 1.7)
+    # calculate the degree of the bond line, y axis is reversed in images
+    radians = math.atan2(-y1 + y2, x1 - x2) + math.pi/2  # add 90 degree to make the angle perpendicular
+
+    def dist_point(point, spacer):
+        dist_x = int(math.cos(radians) * spacer)
+        dist_y = int(math.sin(radians) * spacer)
+        # y axis is reversed in images
+        pt1 = point + np.array((dist_x, -dist_y))
+        pt2 = point - np.array((dist_x, -dist_y))
+        return pt1, pt2
+
+    if bond_type == 2:
+        start_1, start_2 = dist_point(start, d_space)
+        end_1, end_2 = dist_point(end, d_space)
+        cv2.line(src, start_1, end_1, (87, 87, 87, 255), thickness=line_thickness)
+        cv2.line(src, start_2, end_2, (87, 87, 87, 255), thickness=line_thickness)
+    else:
+        cv2.line(src, start, end, (87, 87, 87, 255), thickness=line_thickness)
+    if bond_type == 3:
+        start_1, start_2 = dist_point(start, t_space)
+        end_1, end_2 = dist_point(end, t_space)
+        cv2.line(src, start_1, end_1, (87, 87, 87, 255), thickness=line_thickness)
+        cv2.line(src, start_2, end_2, (87, 87, 87, 255), thickness=line_thickness)
 
 
 def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=False,
@@ -96,8 +115,10 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
 
     # get the maximum position from the atom (positive or negative
     max_pos = max([abs(pos) for pos in list(itertools.chain(*list(atom_map.values())))])
+    # get the icon height
+    icon_height = list(symbol_img_dict.values())[0].shape[1]
     # to the max position we have to add width of the atom icons
-    max_tot_pos = max_pos + list(symbol_img_dict.values())[0].shape[1]
+    max_tot_pos = max_pos + icon_height
     # multiply for 2 because the max position is considered from the center of the image
     dimension = int(max_tot_pos * 2)
     # base black image, four channel to include alpha channel
@@ -108,7 +129,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
     img = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2RGBA)
     # make alpha channel equal to 0
     img[:, :, 3] = np.zeros((dimension, dimension), np.uint8)
-    
+
     # add bond
     bonds_list = list(itertools.combinations(list(atom_map.keys()), 2))
     aromatic_index = set()
@@ -121,17 +142,11 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
             y1 = atom_map[atom1][1] + dimension // 2
             x2 = atom_map[atom2][0] + dimension // 2
             y2 = atom_map[atom2][1] + dimension // 2
-            mid_x = (x1 + x2) // 2
-            mid_y = (y1 + y2) // 2
-            position = (mid_x, mid_y)
-            myradians = math.atan2(y1 - y2, x2 - x1)
-            mydegrees = math.degrees(myradians)
-            length = int(math.dist([x1, y1], [x2, y2]))
-            print(length)
+            bond_thickness = int(icon_height / 10)
             b_type = BOND.GetBondType()
-            bond_img = symbol_img_dict['single_bond']
+            bond_type = 1
             if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
-                bond_img = symbol_img_dict['double_bond']
+                bond_type = 2
             elif rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
                 conditions = [atom1 not in aromatic_index, atom2 not in aromatic_index,
                               atom_type_map[atom1] != 'O', atom_type_map[atom2] != 'O',
@@ -139,12 +154,14 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
                               atom_type_map[atom1] != 'N' or atom_bond_map[atom1] < 3,
                               atom_type_map[atom2] != 'N' or atom_bond_map[atom2] < 3]
                 if all(conditions):
-                    bond_img = symbol_img_dict['double_bond']
+                    bond_type = 2
                     aromatic_index.add(atom1)
                     aromatic_index.add(atom2)
             elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
-                bond_img = symbol_img_dict['triple_bond']
-            add_bond(img, bond_img, mydegrees, position, length)
+                bond_type = 3
+                aromatic_index.add(atom1)
+                aromatic_index.add(atom2)
+            add_bond(img, bond_type, x1, y1, x2, y2, bond_thickness)
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
     for i in reversed(range(len(mol.GetAtoms()))):
