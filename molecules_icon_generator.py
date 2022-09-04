@@ -23,6 +23,7 @@ def load_icons(folder, resize_dim=(300, 300)):
     icon_map = dict()
     for file in os.listdir(folder):
         file_img = cv2.imread(folder + os.sep + file, cv2.IMREAD_UNCHANGED)
+        # if 'bond' not in file: # avoid resizing the bond, they are resized later according to the length
         file_img = cv2.resize(file_img, resize_dim, interpolation=cv2.INTER_AREA)
         icon_map[file.split('.')[0]] = file_img
     return icon_map
@@ -127,11 +128,10 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
             myradians = math.atan2(y1 - y2, x2 - x1)
             mydegrees = math.degrees(myradians)
             length = int(math.dist([x1, y1], [x2, y2]))
-            print(length)
             b_type = BOND.GetBondType()
-            bond_img = symbol_img_dict['single']
+            bond_img = symbol_img_dict['single_bond']
             if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
-                bond_img = symbol_img_dict['double']
+                bond_img = symbol_img_dict['double_bond']
             elif rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
                 conditions = [atom1 not in aromatic_index, atom2 not in aromatic_index,
                               atom_type_map[atom1] != 'O', atom_type_map[atom2] != 'O',
@@ -139,11 +139,11 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
                               atom_type_map[atom1] != 'N' or atom_bond_map[atom1] < 3,
                               atom_type_map[atom2] != 'N' or atom_bond_map[atom2] < 3]
                 if all(conditions):
-                    bond_img = symbol_img_dict['double']
+                    bond_img = symbol_img_dict['double_bond']
                     aromatic_index.add(atom1)
                     aromatic_index.add(atom2)
             elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
-                bond_img = symbol_img_dict['triple']
+                bond_img = symbol_img_dict['triple_bond']
             add_bond(img, bond_img, mydegrees, position, length)
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
