@@ -42,8 +42,7 @@ def rotate_image(image, angle):
 
 def add_image(src, new, position, overwrite=True):
     # position (x,y)
-    new_x = new.shape[1]
-    new_y = new.shape[0]
+    new_y, new_x = new.shape
     y_offset = position[1] - new_y // 2
     x_offset = position[0] - new_x // 2
     # overwrite the source array with the new image only if the alpha channel is equal to 0
@@ -57,9 +56,9 @@ def add_image(src, new, position, overwrite=True):
     return src
 
 
-def add_bond(src, bond_type, degree, position, length):
+def add_bond(src, bond_type, degree, position, dimension_bond):
     # resize the bond length to make it reach the atoms center
-    resized_bond = cv2.resize(bond_type.copy(), (length, length), interpolation=cv2.INTER_AREA)
+    resized_bond = cv2.resize(bond_type.copy(), dimension_bond, interpolation=cv2.INTER_AREA)
     # the resize method fail, thus I extend the image array manually to match the lenght of the bond
     # missing_length = length - bond_type.shape[0]
     #  one_column = bond_type[:, [bond_type.shape[1]//2]] # take a middle column
@@ -113,6 +112,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
     # add bond
     bonds_list = list(itertools.combinations(list(atom_map.keys()), 2))
     aromatic_index = set()
+    height = list(symbol_img_dict.values())[0].shape[0]
     for couple in bonds_list:
         atom1 = couple[0]
         atom2 = couple[1]
@@ -144,7 +144,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
                     aromatic_index.add(atom2)
             elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
                 bond_img = symbol_img_dict['triple_bond']
-            add_bond(img, bond_img, mydegrees, position, length)
+            add_bond(img, bond_img, mydegrees, position, (length, height))
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
     for i in reversed(range(len(mol.GetAtoms()))):
