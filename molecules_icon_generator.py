@@ -66,7 +66,7 @@ def add_bond(src, bond_type, degree, position, dimension_bond):
     #  array_list = [one_column] * length
     # array_list.append(bond_type)
     # resized_bond = np.hstack(array_list)
-    rotated_bond = rotate_image(resized_bond, degree, src.shape)
+    rotated_bond = rotate_image(resized_bond, degree, (src.shape[1], src.shape[0]))
     add_image(src, rotated_bond, position)
 
 
