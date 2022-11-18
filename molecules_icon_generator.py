@@ -21,9 +21,15 @@ import sys
 atom_icon_dir = "base-icons/"
 
 
-def load_icons(folder, resize_dim=(300, 300)):
+def load_icons(folder, resize_dim=(300, 300), empty=False):
     icon_map = dict()
+    if empty:
+        file_img = cv2.imread(folder + os.sep + 'empty.png', cv2.IMREAD_UNCHANGED)
+        file_img = cv2.resize(file_img, resize_dim, interpolation=cv2.INTER_AREA)
     for file in os.listdir(folder):
+        if empty:
+            icon_map[file.split('.')[0]] = file_img
+            continue
         file_img = cv2.imread(folder + os.sep + file, cv2.IMREAD_UNCHANGED)
         file_img = cv2.resize(file_img, resize_dim, interpolation=cv2.INTER_AREA)
         icon_map[file.split('.')[0]] = file_img
