@@ -15,11 +15,12 @@ import molecules_icon_generator as mig
 atom_icon_dir = "base-icons/"
     
 if __name__ == "__main__":
-    st.write('''
-    # Molecule-icons generator!
+    st.set_page_config(page_title="Moleculeicons")
+    st.header('''
+    Molecule icons generator!
     ''')
 
-    st.write('''
+    st.text('''
     Generate icons of molecules from Smiles, Names, Cas-number or standard Inchi.
     For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git) with the python module
     ''')
