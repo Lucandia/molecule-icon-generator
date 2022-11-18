@@ -22,8 +22,8 @@ if __name__ == "__main__":
 
     st.text('''
     Generate icons of molecules from Smiles, Names, Cas-number or standard Inchi.
-    For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git) with the python module
     ''')
+    st.markdown("For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git) with the python module")
 
     input_type = st.selectbox("Create your icon by",
                               ['name', 'smiles', 'cas_number', 'stdinchi', 'stdinchikey'],
