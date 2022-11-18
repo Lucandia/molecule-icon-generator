@@ -7,7 +7,8 @@ The atoms colors are inspired by the [CPK coloring convention](https://en.wikipe
 
 ## Try the web app:
 
-[Molecules-icons generator web app](https://lmonari5-molecule-icon-generator-streamlit-app-qgtak1.streamlitapp.com/) powered by streamlit
+[Molecules-icons generator web app](https://molecule-icon-generator.streamlit.app/) powered by streamlit
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://molecule-icon-generator.streamlit.app/)
 
 ## Requirements
 - rdkit (`pip install rdkit`)
