@@ -38,7 +38,9 @@ if __name__ == "__main__":
     single_bonds = st.checkbox('Draw just single_bonds')
     remove_H = st.checkbox('remove all Hydrogens')
     rdkit_draw = st.checkbox('show rdkit structure')
+    bw = st.checkbox('black and white')
 
+    
     # catch error when using the cirpy library
     try:
         if input_type == 'name':
@@ -68,7 +70,7 @@ if __name__ == "__main__":
                               A higher multiplier leads to higher resolution. Default: 150''')
         if not st.button('run'):
             st.stop()
-        icon_map = mig.load_icons(atom_icon_dir, (icon_size, icon_size))
+        icon_map = mig.load_icons(atom_icon_dir, (icon_size, icon_size), empty=bw)
         image = mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
                                single_bonds=single_bonds, remove_H=remove_H, save=True,
                                symbol_img_dict=icon_map, position_multiplier=pos_multi)
