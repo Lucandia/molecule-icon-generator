@@ -8,14 +8,14 @@ Created on Wed Aug 31 02:56:08 2022
 import streamlit as st
 import cirpy
 from cirpy import Molecule
-import os
 import cv2
 import molecules_icon_generator as mig
+
 # select the folder with the atom icons:
 atom_icon_dir = "base-icons/"
-    
+
 if __name__ == "__main__":
-    st.set_page_config(page_title="Moleculeicons")
+    st.set_page_config(page_title="Molecule icons")
     st.header('''
     Molecule icons generator!
     ''')
@@ -23,17 +23,18 @@ if __name__ == "__main__":
     st.text('''
     Generate icons of molecules from Smiles, Names, Cas-number or standard Inchi.
     ''')
-    st.markdown("For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git) with the python module")
+    st.markdown(
+        "For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git) with the python module")
 
     input_type = st.selectbox("Create your icon by",
                               ['name', 'smiles', 'cas_number', 'stdinchi', 'stdinchikey'],
                               help='Chose the input info of your moleculs')
     def_dict = {'name': 'paracetamol',
-                'smiles': "CC(=O)Nc1ccc(cc1)O", 
+                'smiles': "CC(=O)Nc1ccc(cc1)O",
                 'cas_number': '103-90-2',
                 'stdinchi': 'InChI=1S/C8H9NO2/c1-6(10)9-7-2-4-8(11)5-3-7/h2-5,11H,1H3,(H,9,10)',
                 'stdinchikey': 'RZVAJINKPMORJF-UHFFFAOYSA-N'}
-                
+
     input_string = st.text_input(input_type + ' :', def_dict[input_type])
 
     single_bonds = st.checkbox('Draw just single_bonds')
@@ -41,7 +42,8 @@ if __name__ == "__main__":
     rdkit_draw = st.checkbox('show rdkit structure')
     bw = st.checkbox('black and white')
 
-    
+    new_color = {key: st.color_picker(key, value) for key, value in mig.color_map.items()}
+
     # catch error when using the cirpy library
     try:
         if input_type == 'name':
@@ -54,27 +56,26 @@ if __name__ == "__main__":
     except Exception as e:
         st.write(f'''
         The cirpy python library is not able to resolve your input {input_type}.
-        You can use the smiles input to skip the cirpy library.
+        You can use SMILES to skip the cirpy library.
         ''')
         if input_type != 'smiles':
             st.stop()
-    
-    if input_type == 'smiles': # if the input is a smile, use it directly ignoring the cirpy smiles
-            smiles = input_string
-    filename = 'molecular-icon' + '.png'
+
+    if input_type == 'smiles':  # if the input is a smile, use it directly ignoring the cirpy smiles
+        smiles = input_string
 
     try:
-        icon_size = st.slider('Atom size', 100, 500, 300,
+        icon_size = st.slider('Atom size', 0, 100, 500,
                               help='''Atom icons size in pixel. Default: 300''')
-        pos_multi = st.slider('Image size multiplier', 50, 250, 150,
+        pos_multi = st.slider('Image size multiplier', 0, 160, 800,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               A higher multiplier leads to higher resolution. Default: 150''')
         if not st.button('run'):
             st.stop()
-        icon_map = mig.load_icons(atom_icon_dir, (icon_size, icon_size), empty=bw)
-        image = mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
-                               single_bonds=single_bonds, remove_H=remove_H, save=True,
-                               symbol_img_dict=icon_map, position_multiplier=pos_multi)
+        mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
+                       single_bonds=single_bonds, remove_H=remove_H, save=True,
+                       symbol_img_dict=icon_map, position_multiplier=pos_multi, atom_radius=icon_size, bw=bw,
+                       atom_color=new_color)
     except Exception as e:
         st.write('''
         Probably Rdkit failed in building the structure of the molecule.
@@ -86,13 +87,14 @@ if __name__ == "__main__":
         {e}''')
         st.stop()
 
-    im_rgba = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
+    im_mol = cv2.imread('molecular-icon.png', cv2.IMREAD_UNCHANGED)
+    im_rgba = cv2.cvtColor(im_mol, cv2.COLOR_BGRA2RGBA)
     img_list = [im_rgba]
     caption_list = ['Iupac name: ' + iupac]
     column_widt = 600
 
     if rdkit_draw:
-        rdkit_img = cv2.imread(os.getcwd() + os.sep + "molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
+        rdkit_img = cv2.imread("molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
         rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
         img_list.append(rdkit_img)
         caption_list.append('Rdkit 2D conformation')
@@ -100,11 +102,16 @@ if __name__ == "__main__":
 
     st.image(img_list, caption=caption_list, width=column_widt, channels='RGBA')
 
-    with open(os.getcwd() + os.sep + filename, "rb") as file:
+    img_format = st.selectbox(
+        'Download file format:',
+        ('svg', 'png', 'jpeg', 'pdf'))
+
+    filename = 'molecular-icon.' + img_format
+    with open(filename, "rb") as file:
         btn = st.download_button(label="Download icon",
                                  data=file,
                                  file_name=filename,
-                                 mime="image/png")
+                                 mime=f"image/{img_format}")
 
     st.write('''
     Thanks for using the Molecules icons generators!

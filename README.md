@@ -2,8 +2,8 @@
 <img src="example.png" width=35% height=35%>
 Generate nice icons of molecules from SMILES.
 
-This program takes some icons of atoms and bonds (provided with the code) and following the topology of an SMILES chemical structure combine the into an icon (output: 3000 x 3000 pixels).
-The atoms colors are inspired by the [CPK coloring convention](https://en.wikipedia.org/wiki/CPK_coloring)
+This program follows the topology of SMILES chemical structures and create an icon.
+The atoms colors are inspired by the [CPK coloring convention](https://sciencenotes.org/molecule-atom-colors-cpk-colors/)
 
 ## Try the web app:
 
