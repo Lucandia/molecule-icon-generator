@@ -7,4 +7,3 @@ svgwrite
 svglib
 reportlab
 pdf2image
-colorsys
