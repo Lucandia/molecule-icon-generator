@@ -108,13 +108,13 @@ if __name__ == "__main__":
         caption_list.append('Rdkit 2D conformation')
         col1, col2 = st.columns(2)
         try:
-            col1.image(im_rgba, use_column_width=True, channels='RGBA')
-            col2.image(rdkit_img, use_column_width=True, channels='RGBA')
+            col1.image(im_rgba, width=300, use_column_width=True, channels='RGBA')
+            col2.image(rdkit_img, width=300, use_column_width=True, channels='RGBA')
         except:
             st.write('If the images are too big, they are not rendered. They are still available for download.')
     else:
         try:
-            st.image(im_rgba, channels='RGBA')
+            st.image(im_rgba, width=600, channels='RGBA')
         except:
             st.write('If the images are too big, they are not rendered. They are still available for download.')
 
