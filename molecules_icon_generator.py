@@ -226,7 +226,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
         drawing = svg2rlg(fullname)
         renderPDF.drawToFile(drawing, pdf_name)
     if save_png or save_jpeg:
-        pages = convert_from_path(pdf_name, dpi=300)
+        pages = convert_from_path(pdf_name)
     if save_png:
         pages[0].save(directory + os.sep + name + '.png', 'PNG')
     if save_jpeg:
