@@ -114,7 +114,9 @@ if __name__ == "__main__":
         {e}''')
         st.stop()
 
-    st.markdown('<img src="molecular-icon.svg">')
+    f = open("molecular-icon.svg", "r")
+    svg_text = f.read()
+    render_svg(svg_text)
 
     if rdkit_draw:
         rdkit_img = cv2.imread("molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
