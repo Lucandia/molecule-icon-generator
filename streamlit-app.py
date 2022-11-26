@@ -97,20 +97,19 @@ if __name__ == "__main__":
         {e}''')
         st.stop()
 
-    im_mol = cv2.imread('molecular-icon.png', cv2.IMREAD_UNCHANGED)
+    im_mol = cv2.imread('molecular-icon.jpeg', cv2.IMREAD_UNCHANGED)
     im_rgba = cv2.cvtColor(im_mol, cv2.COLOR_BGRA2RGBA)
-    img_list = [im_rgba]
     caption_list = ['Iupac name: ' + iupac]
-    column_widt = 600
 
     if rdkit_draw:
         rdkit_img = cv2.imread("molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
         rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
-        img_list.append(rdkit_img)
         caption_list.append('Rdkit 2D conformation')
-        column_widt = 300
-
-    st.image(img_list, caption=caption_list, width=column_widt, channels='RGBA')
+        col1, col2 = st.columns(2)
+        col1.image(im_rgba, use_column_width=True, channels='RGBA')
+        col2.image(rdkit_img, use_column_width=True, channels='RGBA')
+    else:
+        st.image(im_rgba, use_column_width=True, channels='RGBA')
 
 
     filename = 'molecular-icon.' + img_format
