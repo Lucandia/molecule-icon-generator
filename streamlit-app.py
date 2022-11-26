@@ -80,8 +80,8 @@ if __name__ == "__main__":
         pos_multi = st.slider('Image size multiplier', 0, 800, 160,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               A higher multiplier leads to higher resolution. Default: 150''')
-        if pos_multi > 300:
-            st.write('If the images are too big, they are not rendered. They are still available foe download.')
+        if pos_multi > 200:
+            st.write('If the images are too big, they are not rendered. They are still available for download.')
         if not st.button('run'):
             st.stop()
         mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         {e}''')
         st.stop()
 
-    im_mol = cv2.imread('molecular-icon.jpeg', cv2.IMREAD_UNCHANGED)
+    im_mol = cv2.imread('molecular-icon.png', cv2.IMREAD_UNCHANGED)
     im_rgba = cv2.cvtColor(im_mol, cv2.COLOR_BGRA2RGBA)
     caption_list = ['Iupac name: ' + iupac]
 
