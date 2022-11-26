@@ -15,7 +15,7 @@ import molecules_icon_generator as mig
 # import the color mapping of the atoms
 new_color = mig.color_map
 
-def render_svg(svg, dimension):
+def render_svg(svg):
     """Renders the given svg string."""
     b64 = base64.b64encode(svg.encode('utf-8')).decode("utf-8")
     html = r'<img width="50px" height="50px" src="data:image/svg+xml;base64,%s"/>' % b64
