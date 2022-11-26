@@ -80,7 +80,7 @@ if __name__ == "__main__":
         pos_multi = st.slider('Image size multiplier', 0, 800, 160,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               A higher multiplier leads to higher resolution. Default: 150''')
-        if pos_multi > 200:
+        if pos_multi >= 200:
             st.write('If the images are too big, they are not rendered. They are still available for download.')
         if not st.button('run'):
             st.stop()
