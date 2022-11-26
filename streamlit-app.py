@@ -11,8 +11,8 @@ from cirpy import Molecule
 import cv2
 import molecules_icon_generator as mig
 
-# select the folder with the atom icons:
-atom_icon_dir = "base-icons/"
+# import the color mapping of the atoms
+new_color = mig.color_map
 
 if __name__ == "__main__":
     st.set_page_config(page_title="Molecule icons")
@@ -46,7 +46,6 @@ if __name__ == "__main__":
         'Download file format:',
         ('svg', 'png', 'jpeg', 'pdf'))
 
-    new_color = mig.color_map
     col1, col2 = st.columns(2)
     with col1:
         atom_color = st.selectbox(
