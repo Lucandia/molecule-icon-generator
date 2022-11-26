@@ -114,12 +114,8 @@ if __name__ == "__main__":
         {e}''')
         st.stop()
 
-    im_mol = cv2.imread('molecular-icon.png', cv2.IMREAD_UNCHANGED)
-    im_rgba = cv2.cvtColor(im_mol, cv2.COLOR_BGRA2RGBA)
-    img_list = [im_rgba]
-    caption_list = ['Iupac name: ' + iupac]
-
     st.markdown('<img src="molecular-icon.svg">')
+
     if rdkit_draw:
         rdkit_img = cv2.imread("molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
         rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
