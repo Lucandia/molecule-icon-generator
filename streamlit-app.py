@@ -43,12 +43,11 @@ if __name__ == "__main__":
     bw = st.checkbox('black and white')
 
     cols = st.columns(len(mig.color_map))
-    col = 0
+    n_col = 0
     new_color = {}
     for key, value in mig.color_map.items():
-        with cols[col]:
-            new_color[key] = st.color_picker(key, value)
-        col += 1
+            new_color[key] = cols[n_col].color_picker(key, value)
+        n_col += 1
 
     # catch error when using the cirpy library
     try:
@@ -79,7 +78,7 @@ if __name__ == "__main__":
         if not st.button('run'):
             st.stop()
         mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
-                       single_bonds=single_bonds, remove_H=remove_H, save=True,
+                       single_bonds=single_bonds, remove_H=remove_H,
                        position_multiplier=pos_multi, atom_radius=icon_size, bw=bw,
                        atom_color=new_color)
     except Exception as e:
