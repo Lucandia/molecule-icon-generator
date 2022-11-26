@@ -46,7 +46,7 @@ if __name__ == "__main__":
     n_col = 0
     new_color = {}
     for key, value in mig.color_map.items():
-            new_color[key] = cols[n_col].color_picker(key, value)
+        new_color[key] = cols[n_col].color_picker(key, value)
         n_col += 1
 
     # catch error when using the cirpy library
