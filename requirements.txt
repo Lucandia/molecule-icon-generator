@@ -3,7 +3,7 @@ opencv-python-headless
 argparse
 numpy
 cirpy
-import svgwrite
+svgwrite
 svglib
 reportlab
 pdf2image
