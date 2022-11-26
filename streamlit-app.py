@@ -80,7 +80,7 @@ if __name__ == "__main__":
             st.stop()
         mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
                        single_bonds=single_bonds, remove_H=remove_H, save=True,
-                       symbol_img_dict=icon_map, position_multiplier=pos_multi, atom_radius=icon_size, bw=bw,
+                       position_multiplier=pos_multi, atom_radius=icon_size, bw=bw,
                        atom_color=new_color)
     except Exception as e:
         st.write('''
