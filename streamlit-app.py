@@ -114,15 +114,6 @@ if __name__ == "__main__":
         {e}''')
         st.stop()
 
-    f = open("molecular-icon.svg", "r")
-    svg_text = f.read()
-    render_svg(svg_text)
-
-    if rdkit_draw:
-        rdkit_img = cv2.imread("molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
-        rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
-        st.image(rdkit_img, caption='Rdkit 2D conformation', channels='RGBA')
-
     filename = 'molecular-icon.' + img_format
     with open(filename, "rb") as file:
         btn = st.download_button(label="Download icon",
@@ -132,4 +123,16 @@ if __name__ == "__main__":
 
     st.write('''
     Thanks for using the Molecules icons generators!
+    SVG Preview:
     ''')
+
+    f = open("molecular-icon.svg", "r")
+    svg_text = f.read()
+    render_svg(svg_text)
+
+    if rdkit_draw:
+        rdkit_img = cv2.imread("molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
+        rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
+        st.image(rdkit_img, caption='Rdkit 2D conformation', channels='RGBA')
+
+
