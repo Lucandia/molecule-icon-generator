@@ -47,7 +47,7 @@ if __name__ == "__main__":
         ('svg', 'png', 'jpeg', 'pdf'))
 
     new_color = mig.color_map
-    col1, col2 = st.columns(1)
+    col1, col2 = st.columns(2)
     with col1:
         atom_color = st.selectbox(
             'Change the color:',
