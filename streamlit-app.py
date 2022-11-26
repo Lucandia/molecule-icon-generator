@@ -123,7 +123,9 @@ if __name__ == "__main__":
 
     st.write('''
     Thanks for using the Molecules icons generators!
-    SVG Preview:
+    ''')
+    st.write('''
+    Image SVG preview:
     ''')
 
     f = open("molecular-icon.svg", "r")
