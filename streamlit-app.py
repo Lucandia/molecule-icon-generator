@@ -42,7 +42,13 @@ if __name__ == "__main__":
     rdkit_draw = st.checkbox('show rdkit structure')
     bw = st.checkbox('black and white')
 
-    new_color = {key: st.color_picker(key, value) for key, value in mig.color_map.items()}
+    cols = st.columns(len(mig.color_map))
+    col = 0
+    new_color = {}
+    for key, value in mig.color_map.items():
+        with cols[col]:
+            new_color[key] = st.color_picker(key, value)
+        col += 1
 
     # catch error when using the cirpy library
     try:
