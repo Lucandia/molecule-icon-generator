@@ -114,7 +114,7 @@ if __name__ == "__main__":
             st.write('If the images are too big, they are not rendered. They are still available for download.')
     else:
         try:
-            st.image(im_rgba, use_column_width=True, channels='RGBA')
+            st.image(im_rgba, channels='RGBA')
         except:
             st.write('If the images are too big, they are not rendered. They are still available for download.')
 
