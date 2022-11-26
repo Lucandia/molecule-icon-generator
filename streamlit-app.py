@@ -46,13 +46,13 @@ if __name__ == "__main__":
         'Download file format:',
         ('svg', 'png', 'jpeg', 'pdf'))
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap='medium')
     with col1:
         atom_color = st.selectbox(
             'Change the color:',
             list(mig.color_map.keys()))
     with col2:
-        new_color[atom_color] = st.color_picker(atom_color, mig.color_map[atom_color])
+        new_color[atom_color] = st.color_picker(atom_color, mig.color_map[atom_color], label_visibility="hidden")
 
     # catch error when using the cirpy library
     try:
