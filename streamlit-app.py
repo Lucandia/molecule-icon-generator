@@ -80,8 +80,7 @@ if __name__ == "__main__":
         pos_multi = st.slider('Image size multiplier', 0, 320, 80,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               A higher multiplier leads to higher resolution. Default: 150''')
-        if pos_multi >= 200:
-            st.write('If the images are too big, they are not rendered. They are still available for download.')
+
         if not st.button('run'):
             st.stop()
         mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
@@ -108,10 +107,16 @@ if __name__ == "__main__":
         rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
         caption_list.append('Rdkit 2D conformation')
         col1, col2 = st.columns(2)
-        col1.image(im_rgba, use_column_width=True, channels='RGBA')
-        col2.image(rdkit_img, use_column_width=True, channels='RGBA')
+        try:
+            col1.image(im_rgba, use_column_width=True, channels='RGBA')
+            col2.image(rdkit_img, use_column_width=True, channels='RGBA')
+        except:
+            st.write('If the images are too big, they are not rendered. They are still available for download.')
     else:
-        st.image(im_rgba, use_column_width=True, channels='RGBA')
+        try:
+            st.image(im_rgba, use_column_width=True, channels='RGBA')
+        except:
+            st.write('If the images are too big, they are not rendered. They are still available for download.')
 
 
     filename = 'molecular-icon.' + img_format
