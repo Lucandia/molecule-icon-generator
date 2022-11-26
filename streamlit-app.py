@@ -51,7 +51,7 @@ if __name__ == "__main__":
     with col1:
         atom_color = st.selectbox(
             'Change the color:',
-            mig.color_map.keys)
+            list(mig.color_map.keys()))
     with col2:
         new_color[atom_color] = st.color_picker(atom_color, mig.color_map[atom_color])
 
