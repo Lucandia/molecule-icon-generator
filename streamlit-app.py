@@ -83,7 +83,7 @@ if __name__ == "__main__":
     try:
         icon_size = st.slider('Atom size', 0, 300, 50,
                               help='''Atom icons size in pixel. Default: 300''')
-        pos_multi = st.slider('Image size multiplier', 0, 320, 80,
+        pos_multi = st.slider('Image size multiplier', 0, 480, 80,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               A higher multiplier leads to higher resolution. Default: 150''')
 
