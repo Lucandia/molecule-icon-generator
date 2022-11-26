@@ -42,9 +42,15 @@ if __name__ == "__main__":
     rdkit_draw = st.checkbox('show rdkit structure')
     bw = st.checkbox('black and white')
 
+    forms = [False, False, False, False]
     img_format = st.selectbox(
         'Download file format:',
         ('svg', 'png', 'jpeg', 'pdf'))
+
+    for ind, img_form in enumerate(('svg', 'png', 'jpeg', 'pdf')):
+        if img_form == img_format:
+            forms[ind] = True
+
 
     col1, col2 = st.columns(2, gap='medium')
     with col1:
@@ -86,13 +92,16 @@ if __name__ == "__main__":
         mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
                        single_bonds=single_bonds, remove_H=remove_H,
                        position_multiplier=pos_multi, atom_radius=icon_size, bw=bw,
-                       atom_color=new_color)
+                       atom_color=new_color,
+                       save_svg= forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3])
     except Exception as e:
         st.write('''
-        Probably Rdkit failed in building the structure of the molecule.
+        Rdkit failed in building the structure of the molecule or the Image is too big.
         ''')
         if input_type != 'smiles':
             st.write(f'Try to use the smiles of the molecule instead of {input_type}')
+        if img_format != 'svg':
+            st.write(f'Try to use the svg format')
         st.write(f'''Full error:
 
         {e}''')
