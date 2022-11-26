@@ -9,10 +9,17 @@ import streamlit as st
 import cirpy
 from cirpy import Molecule
 import cv2
+import base64
 import molecules_icon_generator as mig
 
 # import the color mapping of the atoms
 new_color = mig.color_map
+
+def render_svg(svg):
+    """Renders the given svg string."""
+    b64 = base64.b64encode(svg.encode('utf-8')).decode("utf-8")
+    html = r'<img src="data:image/svg+xml;base64,%s"/>' % b64
+    st.write(html, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     st.set_page_config(page_title="Molecule icons")
@@ -111,16 +118,12 @@ if __name__ == "__main__":
     im_rgba = cv2.cvtColor(im_mol, cv2.COLOR_BGRA2RGBA)
     img_list = [im_rgba]
     caption_list = ['Iupac name: ' + iupac]
-    column_widt = 600
 
+    st.markdown('<img src="molecular-icon.svg">')
     if rdkit_draw:
         rdkit_img = cv2.imread("molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
         rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
-        img_list.append(rdkit_img)
-        caption_list.append('Rdkit 2D conformation')
-        column_widt = 300
-
-    st.image(img_list, caption=caption_list, width=column_widt, channels='RGBA')
+        st.image(rdkit_img, caption='Rdkit 2D conformation', channels='RGBA')
 
     filename = 'molecular-icon.' + img_format
     with open(filename, "rb") as file:
