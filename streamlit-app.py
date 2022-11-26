@@ -42,12 +42,18 @@ if __name__ == "__main__":
     rdkit_draw = st.checkbox('show rdkit structure')
     bw = st.checkbox('black and white')
 
-    cols = st.columns(len(mig.color_map))
-    n_col = 0
-    new_color = {}
-    for key, value in mig.color_map.items():
-        new_color[key] = cols[n_col].color_picker(key, value)
-        n_col += 1
+    img_format = st.selectbox(
+        'Download file format:',
+        ('svg', 'png', 'jpeg', 'pdf'))
+
+    new_color = mig.color_map
+    col1, col2 = st.columns(1)
+    with col1:
+        atom_color = st.selectbox(
+            'Change the color:',
+            mig.color_map.keys)
+    with col2:
+        new_color[atom_color] = st.color_picker(atom_color, mig.color_map[atom_color])
 
     # catch error when using the cirpy library
     try:
@@ -107,9 +113,6 @@ if __name__ == "__main__":
 
     st.image(img_list, caption=caption_list, width=column_widt, channels='RGBA')
 
-    img_format = st.selectbox(
-        'Download file format:',
-        ('svg', 'png', 'jpeg', 'pdf'))
 
     filename = 'molecular-icon.' + img_format
     with open(filename, "rb") as file:
