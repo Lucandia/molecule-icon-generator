@@ -13,7 +13,6 @@ import molecules_icon_generator as mig
 import os
 import json
 
-
 def render_svg(svg):
     """Renders the given svg string."""
     b64 = base64.b64encode(svg.encode('utf-8')).decode("utf-8")
@@ -22,8 +21,11 @@ def render_svg(svg):
 
 if __name__ == "__main__":
     if 'new_colors.json' in os.listdir():  # used colors previously selected
-        with open('new_colors.json', 'r') as f:
-            new_color = json.load(f)
+        try:
+            with open('new_colors.json', 'r') as f:
+                new_color = json.load(f)
+        except:
+            new_color = mig.color_map.copy()
     else:  # use default colors
         new_color = mig.color_map.copy()
 
