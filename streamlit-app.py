@@ -13,7 +13,7 @@ import base64
 import molecules_icon_generator as mig
 
 # import the color mapping of the atoms
-new_color = mig.color_map
+new_color = mig.color_map.copy()
 
 def render_svg(svg):
     """Renders the given svg string."""
@@ -58,14 +58,16 @@ if __name__ == "__main__":
         if img_form == img_format:
             forms[ind] = True
 
-
-    col1, col2 = st.columns(2, gap='medium')
+    col1, col2, col3 = st.columns(3, gap='medium')
     with col1:
         atom_color = st.selectbox(
             'Change the color:',
             list(mig.color_map.keys()))
     with col2:
         new_color[atom_color] = st.color_picker(atom_color, mig.color_map[atom_color], label_visibility="hidden")
+    with col3:
+        if st.button('Reset', help='Reset CPK coloring as default'):
+            new_color = mig.color_map.copy()
 
     # catch error when using the cirpy library
     try:
