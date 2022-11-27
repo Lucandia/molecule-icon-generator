@@ -8,12 +8,13 @@ Created on Wed Aug 31 02:56:08 2022
 import streamlit as st
 import cirpy
 from cirpy import Molecule
-import cv2
 import base64
 import molecules_icon_generator as mig
 
+# don't change the colors in the original dictionary
+color_ref = mig.color_map.copy()
 # import the color mapping of the atoms
-new_color = mig.color_map.copy()
+new_color = color_ref
 
 def render_svg(svg):
     """Renders the given svg string."""
