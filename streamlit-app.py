@@ -20,6 +20,8 @@ def render_svg(svg):
     st.write(html, unsafe_allow_html=True)
 
 if __name__ == "__main__":
+    if 'new_color' in locals():
+        st.write('new_color is mantained')
     if 'new_colors.json' in os.listdir():  # used colors previously selected
         try:
             with open('new_colors.json', 'r') as f:
