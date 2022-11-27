@@ -52,7 +52,7 @@ if __name__ == "__main__":
         remove_H = st.checkbox('remove all Hydrogens')
         bw = st.checkbox('black and white')
     with col2:
-        rdkit_draw = st.checkbox('show rdkit svg')
+        rdkit_draw = st.checkbox('show rdkit structure')
         h_shadow = st.checkbox('Hide shadows')
 
     forms = [False, False, False, False]
