@@ -13,11 +13,6 @@ import molecules_icon_generator as mig
 import os
 import json
 
-if 'new_colors.json' in os.listdir():  # used colors previously selected
-    with open('new_colors.json', 'r') as f:
-        new_color = json.load(f)
-else:  # use default colors
-    new_color = mig.color_map.copy()
 
 def render_svg(svg):
     """Renders the given svg string."""
@@ -26,6 +21,12 @@ def render_svg(svg):
     st.write(html, unsafe_allow_html=True)
 
 if __name__ == "__main__":
+    if 'new_colors.json' in os.listdir():  # used colors previously selected
+        with open('new_colors.json', 'r') as f:
+            new_color = json.load(f)
+    else:  # use default colors
+        new_color = mig.color_map.copy()
+
     st.set_page_config(page_title="Molecule icons")
     st.header('''
     Molecule icons generator!
