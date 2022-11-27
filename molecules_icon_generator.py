@@ -270,7 +270,7 @@ def parse():
                           metavar='FOLDER',
                           default=os.getcwd(),
                           help='Path to the folder to save the icon file ')
-    optional.add_argument("--rdkit_draw",
+    optional.add_argument("--rdkit_svg",
                           action='store_true',
                           help='Use this flag to save also the rdkit 2D image of the molecule')
     optional.add_argument("-s", "--single_bond",
@@ -295,7 +295,7 @@ def parse():
 
 if __name__ == "__main__":
     parsed = parse()
-    icon_print(parsed.SMILE, name=parsed.name, directory=parsed.directory, rdkit_svg=parsed.rdkit_draw,
+    icon_print(parsed.SMILE, name=parsed.name, directory=parsed.directory, rdkit_svg=parsed.rdkit_svg,
                single_bonds=parsed.single_bond, remove_H=parsed.remove_H, verbose=parsed.verbose, save_png=True, bw=parsed.black_and_white,
                position_multiplier=int(160*parsed.position_multiplier), atom_radius=int(100*parsed.atom_multiplier),
                shadow=not parsed.hide_shadows)

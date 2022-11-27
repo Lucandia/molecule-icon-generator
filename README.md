@@ -11,11 +11,6 @@ The atoms colors are inspired by the [CPK coloring convention](https://scienceno
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://molecule-icon-generator.streamlit.app/)
 
-## Requirements
-- rdkit (`pip install rdkit`)
-- opencv (`pip install opencv-python`)
-- argparse (`pip install argparse`)
-- numpy (`pip install numpy`)
 
 ### Step 1: clone the repository
 
@@ -23,12 +18,13 @@ The atoms colors are inspired by the [CPK coloring convention](https://scienceno
 git clone https://github.com/lmonari5/molecule-icon-generator.git
 ```
 
-### Step 2: insert the directory with the atom and bond icons
+### Step 2: install packages and requirements
 
-Modify the code, lin 19, anche the variable with the path to the directory containing the base icons:
+For Linux:
 
 ```
-atom_icon_dir = "/your/path/to/base-icons/"
+xargs -a packages.txt sudo apt-get install 
+pip install -r requirements.txt
 ```
 
 ### Step 3: Have Fun
@@ -36,18 +32,13 @@ atom_icon_dir = "/your/path/to/base-icons/"
 - Run the code from command line:
 
  ```
-  python molecules_icon_generator.py "CC(=O)Nc1ccc(cc1)O" --name paracetamol --rdkit_draw
+  python molecules_icon_generator.py "CC(=O)Nc1ccc(cc1)O" --name paracetamol --rdkit_svg
  ```
 
 - Or from the python interpreter:
 
  ```
  from molecules_icon_generator import icon_print 
- icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_img = True, single_bonds = False, remove_H = False, verbose=False)
+ icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_svg = True, single_bonds = False, remove_H = False, verbose=False)
  ```
 
-## Use your icons!
-
-You can add other atoms icons following these guidelines:
-- use same image dimensions
-- name each atom icon with the Atom name abbreviation (example: oxygen icon is called 'O.png')
