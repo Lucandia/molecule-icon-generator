@@ -217,9 +217,9 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
         drawer = rdkit.Chem.Draw.rdMolDraw2D.MolDraw2DSVG(300, 300)
         drawer.DrawMolecule(mol)
         drawer.FinishDrawing()
-        svg = drawer.GetDrawingText()
+        rdkit_svg_text = drawer.GetDrawingText()
         with open(directory + os.sep + name + "_rdkit.svg", 'w') as f:
-            f.write(svg)
+            f.write(rdkit_svg_text)
 
     pdf_name = directory + os.sep + name + ".pdf"
     if save_pdf or save_png or save_jpeg:
