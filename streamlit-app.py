@@ -66,7 +66,8 @@ if __name__ == "__main__":
     with col2:
         new_color[atom_color] = st.color_picker(atom_color, mig.color_map[atom_color], label_visibility="hidden")
     with col3:
-        if st.button('Reset', help='Reset CPK coloring as default'):
+        st.write('Reset colours as default CPK')
+        if st.button('Reset'):
             new_color = mig.color_map.copy()
 
     # catch error when using the cirpy library
