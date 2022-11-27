@@ -70,8 +70,7 @@ if __name__ == "__main__":
 
     if st.button('Reset colours', help='Reset colours as default CPK'):
         st.session_state['color_dict'] = mig.color_map.copy()
-        st.experimental_rerun()
-
+        new_color = st.session_state['color_dict']
 
     # catch error when using the cirpy library
     try:
