@@ -133,8 +133,7 @@ if __name__ == "__main__":
     render_svg(svg_text)
 
     if rdkit_draw:
-        rdkit_img = cv2.imread("molecular-icon_rdkit.png", cv2.IMREAD_UNCHANGED)
-        rdkit_img = cv2.cvtColor(rdkit_img, cv2.COLOR_BGRA2RGBA)
-        st.image(rdkit_img, caption='Rdkit 2D conformation', channels='RGBA')
-
+        f = open("molecular-icon_rdkit.svg", "r")
+        svg_text = f.read()
+        render_svg(svg_text)
 

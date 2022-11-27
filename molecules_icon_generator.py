@@ -123,7 +123,7 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         src.add(src.line(start_2, end_2, stroke=bondcolor, stroke_width=line_thickness))
 
 
-def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=False,
+def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False,
                single_bonds=False, remove_H=False, verbose=False, save_svg=True, save_png=True, save_jpeg=True, save_pdf=True,
                atom_color=color_map, position_multiplier=160, atom_radius=100, bw=False, bondcolor='#575757', shadow=True):
 
@@ -137,6 +137,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
         mol = Chem.AddHs(mol)
     AllChem.Compute2DCoords(mol)
     mol.GetConformer()
+    mol = rdkit.Chem.Draw.rdMolDraw2D.PrepareMolForDrawing(mol)
 
     atom_map = dict()
     atom_type_map = dict()
@@ -211,8 +212,15 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_img=Fa
         add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow, bw=bw)
 
 
-    if rdkit_img:
+    if rdkit_png:
         rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
+    if rdkit_svg:
+        drawer = rdkit.Chem.Draw.rdMolDraw2D.MolDraw2DSVG(300, 300)
+        drawer.DrawMolecule(mol)
+        drawer.FinishDrawing()
+        svg = drawer.GetDrawingText()
+        with open(directory + os.sep + name + "_rdkit.svg", 'w') as f:
+            f.write(svg)
 
     pdf_name = directory + os.sep + name + ".pdf"
     if save_pdf or save_png or save_jpeg:
