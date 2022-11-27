@@ -58,15 +58,16 @@ if __name__ == "__main__":
         if img_form == img_format:
             forms[ind] = True
 
+    if st.button('Reset colours', help='Reset colours as default CPK'):
+        new_color = mig.color_map.copy()
     col1, col2 = st.columns(2, gap='medium')
     with col1:
         atom_color = st.selectbox(
             'Change the color:',
             list(mig.color_map.keys()))
     with col2:
-        new_color[atom_color] = st.color_picker(atom_color, mig.color_map[atom_color], label_visibility="hidden")
-    if st.button('Reset colours', help='Reset colours as default CPK'):
-        new_color = mig.color_map.copy()
+        new_color[atom_color] = st.color_picker(f' Pick  color', mig.color_map[atom_color])
+
 
     # catch error when using the cirpy library
     try:
