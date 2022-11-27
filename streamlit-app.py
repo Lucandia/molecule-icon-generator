@@ -66,7 +66,7 @@ if __name__ == "__main__":
     with col2:
         new_color[atom_color] = st.color_picker(atom_color, mig.color_map[atom_color], label_visibility="hidden")
     with col3:
-        st.write('Reset colours as default CPK')
+        st.text('Reset colours as default CPK')
         if st.button('Reset'):
             new_color = mig.color_map.copy()
 
