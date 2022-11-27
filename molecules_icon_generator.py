@@ -211,7 +211,6 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
             atom = 'other'
         add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow, bw=bw)
 
-
     if rdkit_png:
         rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
     if rdkit_svg:
@@ -296,7 +295,7 @@ def parse():
 
 if __name__ == "__main__":
     parsed = parse()
-    icon_print(parsed.SMILE, parsed.name, parsed.directory, parsed.rdkit_draw,
-               parsed.single_bond, parsed.remove_H, parsed.verbose, save_png=True, bw=parsed.black_and_white,
+    icon_print(parsed.SMILE, name=parsed.name, directory=parsed.directory, rdkit_svg=parsed.rdkit_draw,
+               single_bonds=parsed.single_bond, remove_H=parsed.remove_H, verbose=parsed.verbose, save_png=True, bw=parsed.black_and_white,
                position_multiplier=int(160*parsed.position_multiplier), atom_radius=int(100*parsed.atom_multiplier),
                shadow=not parsed.hide_shadows)

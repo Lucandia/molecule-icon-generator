@@ -94,9 +94,9 @@ if __name__ == "__main__":
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               A higher multiplier leads to higher resolution. Default: 150''')
 
-        if not st.button('run'):
-            st.stop()
-        mig.icon_print(smiles, name='molecular-icon', rdkit_img=rdkit_draw,
+        # if not st.button('run'):
+        #     st.stop()
+        mig.icon_print(smiles, name='molecular-icon', rdkit_svg=rdkit_draw,
                        single_bonds=single_bonds, remove_H=remove_H,
                        position_multiplier=pos_multi, atom_radius=icon_size, bw=bw,
                        atom_color=new_color,
