@@ -62,7 +62,7 @@ if __name__ == "__main__":
     with col1:
         atom_color = st.selectbox(
             'Change the color:',
-            list(mig.color_map.keys()).sort())
+            sorted(list(mig.color_map.keys())))
     with col2:
         new_color[atom_color] = st.color_picker(f' Pick {atom_color} color', mig.color_map[atom_color])
     if st.button('Reset colours', help='Reset colours as default CPK'):
