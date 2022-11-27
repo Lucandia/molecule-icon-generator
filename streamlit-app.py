@@ -10,8 +10,6 @@ import cirpy
 from cirpy import Molecule
 import base64
 import molecules_icon_generator as mig
-import os
-import json
 
 def render_svg(svg):
     """Renders the given svg string."""
@@ -20,16 +18,11 @@ def render_svg(svg):
     st.write(html, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    if 'new_color' in locals():
-        st.write('new_color is mantained')
-    if 'new_colors.json' in os.listdir():  # used colors previously selected
-        try:
-            with open('new_colors.json', 'r') as f:
-                new_color = json.load(f)
-        except:
-            new_color = mig.color_map.copy()
-    else:  # use default colors
-        new_color = mig.color_map.copy()
+    if 'color_dict' not in st.session_state:
+        st.session_state['color_dict'] = mig.color_map.copy()
+    new_color = st.session_state['color_dict']
+
+
 
     st.set_page_config(page_title="Molecule icons")
     st.header('''
@@ -74,11 +67,9 @@ if __name__ == "__main__":
             sorted(list(mig.color_map.keys())))
     with col2:
         new_color[atom_color] = st.color_picker(f' Pick {atom_color} color', mig.color_map[atom_color])
-        with open('new_colors.json', 'w') as f:
-            json.dump(new_color, f)
+
     if st.button('Reset colours', help='Reset colours as default CPK'):
-        os.remove('new_colors.json')
-        new_color = mig.color_map.copy()
+        st.session_state['color_dict'] = mig.color_map.copy()
 
 
     # catch error when using the cirpy library
