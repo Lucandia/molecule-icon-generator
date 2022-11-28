@@ -214,7 +214,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
         atom_y = atom_map[i][1] + dimension // 2
         if atom not in atom_color:
             atom = 'other'
-        add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow)
+        add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow, thickness=thickness)
 
     if rdkit_png:
         rdkit.Chem.Draw.MolToFile(mol, directory + os.sep + name + "_rdkit.png")
