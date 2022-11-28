@@ -103,7 +103,7 @@ if __name__ == "__main__":
         pos_multi = st.slider('Image size multiplier', 0, 480, 80,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               A higher multiplier leads to higher resolution. Default: 80''')
-        thickness = st.slider('Thickness', 0, 1, 1/3,
+        thickness = st.slider('Thickness', 0.0, 1.0, 1/3,
                               help='''Bond and stroke thickness.''')
 
         # if not st.button('run'):
