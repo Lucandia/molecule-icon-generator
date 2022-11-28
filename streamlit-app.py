@@ -98,12 +98,12 @@ if __name__ == "__main__":
         smiles = input_string
 
     try:
-        icon_size = st.slider('Atom size', 0, 300, 100,
+        icon_size = st.slider('Atom size', 0, 600, 100,
                               help='''Atom icons size in pixel. Default: 50''')
-        pos_multi = st.slider('Image size multiplier', 0, 480, 160,
+        pos_multi = st.slider('Image size multiplier', 0, 960, 160,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
                               A higher multiplier leads to higher resolution. Default: 80''')
-        thickness = st.slider('Thickness', 0.0, 1.0, 1/3,
+        thickness = st.slider('Thickness', 0.0, 2.0, 1/3,
                               help='''Bond and stroke thickness.''')
 
         # if not st.button('run'):
