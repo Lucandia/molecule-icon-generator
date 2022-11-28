@@ -133,7 +133,6 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
     elif bw:
         atom_color = {key: '#ffffff' for key in atom_color}
         atom_color['bond'] = '#000000'
-    print(atom_color.keys())
 
     if '.svg' in name:
         fullname = directory + os.sep + name
