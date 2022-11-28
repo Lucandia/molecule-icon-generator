@@ -115,15 +115,13 @@ if __name__ == "__main__":
                        save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
                        thickness=thickness)
     except Exception as e:
-        st.write('''
-        Rdkit failed in building the structure of the molecule or the Image is too big.
-        ''')
-        st.write(f'''Full error: {e}''')
-        if 'pixel' in e and img_format != 'svg':
+        st.error('''
+        Rdkit failed in building the structure of the molecule or the Image is too big.\n
+        Full error: {e}''')
+        if img_format != 'svg':
             st.write(f'Try to use the svg format')
-        else:
-            if input_type != 'smiles':
-                st.write(f'Try to use the smiles of the molecule instead of {input_type}')
+        if input_type != 'smiles':
+            st.write(f'Try to use the smiles of the molecule instead of {input_type}')
         st.stop()
 
     filename = 'molecular-icon.' + img_format
