@@ -11,18 +11,18 @@ from cirpy import Molecule
 import base64
 import molecules_icon_generator as mig
 
+
 def render_svg(svg):
     """Renders the given svg string."""
     b64 = base64.b64encode(svg.encode('utf-8')).decode("utf-8")
     html = r'<img width="300px" height="300px" src="data:image/svg+xml;base64,%s"/>' % b64
     st.write(html, unsafe_allow_html=True)
 
+
 if __name__ == "__main__":
     if 'color_dict' not in st.session_state:
         st.session_state['color_dict'] = mig.color_map.copy()
     new_color = st.session_state['color_dict']
-
-
 
     st.set_page_config(page_title="Molecule icons")
     st.header('''
@@ -49,11 +49,12 @@ if __name__ == "__main__":
     col1, col2 = st.columns(2, gap='medium')
     with col1:
         single_bonds = st.checkbox('Draw just single_bonds')
-        remove_H = st.checkbox('remove all Hydrogens')
-        bw = st.checkbox('black and white')
+        remove_H = st.checkbox('Remove all Hydrogens')
+        bw = st.checkbox('Black and white icon')
     with col2:
-        rdkit_draw = st.checkbox('show rdkit structure')
+        rdkit_draw = st.checkbox('Show rdkit structure')
         h_shadow = st.checkbox('Hide shadows')
+        black = st.checkbox('Just black icon')
 
     forms = [False, False, False, False]
     img_format = st.selectbox(
@@ -98,18 +99,21 @@ if __name__ == "__main__":
 
     try:
         icon_size = st.slider('Atom size', 0, 300, 50,
-                              help='''Atom icons size in pixel. Default: 300''')
+                              help='''Atom icons size in pixel. Default: 50''')
         pos_multi = st.slider('Image size multiplier', 0, 480, 80,
                               help='''Multiply the position of the atoms with respect to the 2D structure.
-                              A higher multiplier leads to higher resolution. Default: 150''')
+                              A higher multiplier leads to higher resolution. Default: 80''')
+        thickness = st.slider('Thickness', 0, 1, 1/3,
+                              help='''Bond and stroke thickness.''')
 
         # if not st.button('run'):
         #     st.stop()
         mig.icon_print(smiles, name='molecular-icon', rdkit_svg=rdkit_draw,
                        single_bonds=single_bonds, remove_H=remove_H,
                        position_multiplier=pos_multi, atom_radius=icon_size, bw=bw,
-                       atom_color=new_color, shadow=not h_shadow,
-                       save_svg= forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3])
+                       atom_color=new_color, shadow=not h_shadow, black=black,
+                       save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
+                       thickness=thickness)
     except Exception as e:
         st.write('''
         Rdkit failed in building the structure of the molecule or the Image is too big.
@@ -144,4 +148,3 @@ if __name__ == "__main__":
         f = open("molecular-icon_rdkit.svg", "r")
         svg_text = f.read()
         render_svg(svg_text)
-

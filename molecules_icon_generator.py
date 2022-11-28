@@ -19,6 +19,9 @@ import itertools
 import argparse
 import os
 import colorsys
+import warnings
+warnings.filterwarnings("ignore")  # brute force approach to avoid decompression bomb warning by pdf2image and PIL
+
 
 color_map = {"H": "#FFFFFF", "D": "#FFFFC0", "T": "#FFFFA0", "He": "#D9FFFF", "Li": "#CC80FF", "Be": "#C2FF00",
              "B": "#FFB5B5", "C": "#909090", "C-13": "#505050", "C-14": "#404040", "N": "#3050F8", "N-15": "#105050",
@@ -39,7 +42,7 @@ color_map = {"H": "#FFFFFF", "D": "#FFFFC0", "T": "#FFFFA0", "He": "#D9FFFF", "L
              "U": "#008FFF", "Np": "#0080FF", "Pu": "#006BFF", "Am": "#545CF2", "Cm": "#785CE3", "Bk": "#8A4FE3",
              "Cf": "#A136D4", "Es": "#B31FD4", "Fm": "#B31FBA", "Md": "#B30DA6", "No": "#BD0D87", "Lr": "#C70066",
              "Rf": "#CC0059", "Db": "#D1004F", "Sg": "#D90045", "Bh": "#E00038", "Hs": "#E6002E", "Mt": "#EB0026",
-             'other': '#f5c2cb'}
+             'other': '#f5c2cb', 'bond': '#575757'}
 
 
 def hex_to_rgb(color):
@@ -71,23 +74,21 @@ def circ_post(degree, size, center):
     return x, y
 
 
-def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, shadow_deg=45, shadow_light=0.25, bw=False):
-    if bw:
-        src.add(src.circle(center=(center[0], center[1]), r=radius, fill='#ffffff', stroke='#000000', stroke_width=radius//4))
-        return
+def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, shadow_deg=45, shadow_light=0.45,
+                 thickness=1/3):
     r, g, b = hex_to_rgb(color)
     h, l, s = colorsys.rgb_to_hls(r, g, b)
     rgb = colorsys.hls_to_rgb(h, l*shadow_light, s)
     shadow_color = rgb_to_hex(rgb)
-    src.add(src.circle(center=(center[0], center[1]), r=radius, fill=color, stroke=shadow_color, stroke_width=radius//12))
+    src.add(src.circle(center=(center[0], center[1]), r=radius, fill=color, stroke=shadow_color, stroke_width=radius*thickness/2))
     if shadow:
         start_shade = circ_post(-shadow_deg, radius, center)
         end_shade = circ_post(-shadow_deg+180, radius, center)
         src.add(src.path(d=f'M{start_shade[0]},{start_shade[1]} A{radius},{radius} 0, 1,1 {end_shade[0]},{end_shade[1]} M{end_shade[0]},{end_shade[1]} A{radius*shadow_curve},{radius*shadow_curve} 0, 0,0 {start_shade[0]},{start_shade[1]} Z',
                          fill=shadow_color, stroke_width=0))
         # patch to cover line that appears in jpeg and png images with pdf2image
-        start_patch = circ_post(-shadow_deg, radius-radius//24, center)
-        end_patch = circ_post(-shadow_deg+180, radius-radius//24, center)
+        start_patch = circ_post(-shadow_deg, radius-radius*thickness/4, center)
+        end_patch = circ_post(-shadow_deg+180, radius-radius*thickness/4, center)
         src.add(src.path(d=f'M{start_patch[0]},{start_patch[1]} L {end_patch[0]},{end_patch[1]}',
                          stroke=color))
     return
@@ -123,9 +124,15 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         src.add(src.line(start_2, end_2, stroke=bondcolor, stroke_width=line_thickness))
 
 
-def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False,
-               single_bonds=False, remove_H=False, verbose=False, save_svg=True, save_png=True, save_jpeg=True, save_pdf=True,
-               atom_color=color_map, position_multiplier=160, atom_radius=100, bw=False, bondcolor='#575757', shadow=True):
+def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False, single_bonds=False,
+                remove_H=False, verbose=False, save_svg=True, save_png=True, save_jpeg=True, save_pdf=True,
+               atom_color=color_map, position_multiplier=160, atom_radius=100, bw=False, shadow=True,
+               black=False, thickness=1/4):
+    if black:
+        atom_color = {key: '#000000' for key in atom_color}
+    elif bw:
+        atom_color = {key: '#ffffff' for key in atom_color}
+        atom_color['bond'] = '#000000'
 
     if '.svg' in name:
         fullname = directory + os.sep + name
@@ -168,9 +175,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
     # add bond
     bonds_list = list(itertools.combinations(list(atom_map.keys()), 2))
     aromatic_index = set()
-    if bw:
-        bondcolor = '#000000'
-    bond_thickness = int(atom_radius // 4)
+    bond_thickness = int(atom_radius * thickness)
     for couple in bonds_list:
         atom1 = couple[0]
         atom2 = couple[1]
@@ -198,7 +203,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
                 bond_type = 3
                 aromatic_index.add(atom1)
                 aromatic_index.add(atom2)
-            add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor)
+            add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor=atom_color['bond'])
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
     for i in reversed(range(len(mol.GetAtoms()))):
@@ -209,10 +214,10 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
         atom_y = atom_map[i][1] + dimension // 2
         if atom not in atom_color:
             atom = 'other'
-        add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow, bw=bw)
+        add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow)
 
     if rdkit_png:
-        rdkit.Chem.Draw.MolToImageFile(mol, directory + os.sep + name + "_rdkit.png")
+        rdkit.Chem.Draw.MolToFile(mol, directory + os.sep + name + "_rdkit.png")
     if rdkit_svg:
         drawer = rdkit.Chem.Draw.rdMolDraw2D.MolDraw2DSVG(300, 300)
         drawer.DrawMolecule(mol)
@@ -238,6 +243,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
         pages[0].save(directory + os.sep + name + '.png', 'PNG')
     if save_jpeg:
         pages[0].save(directory + os.sep + name + '.jpeg', 'JPEG')
+
     print('\033[0;32m' + fullname + ' completed' + '\033[0;0;m')
     return svg
 
@@ -288,6 +294,9 @@ def parse():
     optional.add_argument("--hide_shadows",
                           action='store_true',
                           help='Hide the shadows of the atoms')
+    optional.add_argument('-b', "--black",
+                          action='store_true',
+                          help='Draw a black icon')
     args = parser.parse_args()
     return args
 
@@ -298,4 +307,4 @@ if __name__ == "__main__":
     icon_print(parsed.SMILE, name=parsed.name, directory=parsed.directory, rdkit_svg=parsed.rdkit_svg,
                single_bonds=parsed.single_bond, remove_H=parsed.remove_H, verbose=parsed.verbose, save_png=True, bw=parsed.black_and_white,
                position_multiplier=int(160*parsed.position_multiplier), atom_radius=int(100*parsed.atom_multiplier),
-               shadow=not parsed.hide_shadows)
+               shadow=not parsed.hide_shadows, black=parsed.black)
