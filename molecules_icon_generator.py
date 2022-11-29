@@ -100,8 +100,8 @@ def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, sh
 def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575757', shadow_light=0.35, shadow=True):
     start = np.array((x1, y1))
     end = np.array((x2, y2))
-    d_space = int(line_thickness * 1)
-    t_space = int(line_thickness * 2)
+    d_space = line_thickness * 1.5
+    t_space = line_thickness * 2.5
     # calculate the degree of the bond line, y axis is reversed in images
     radians = math.atan2(-y1 + y2, x1 - x2) + math.pi/2  # add 90 degree to make the angle perpendicular
     contour_color = shadow_color_correction(bondcolor, shadow_light)
