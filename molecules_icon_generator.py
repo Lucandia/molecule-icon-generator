@@ -118,7 +118,7 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         src.add(src.line(p.tolist(), q.tolist(), stroke=bondcolor, stroke_width=line_thickness,
                          stroke_linecap="round"))
     def add_bond_contour(p, q):
-        src.add(src.line(p.tolist(), q.tolist(), stroke=contour_color, stroke_width=line_thickness+line_thickness/5,
+        src.add(src.line(p.tolist(), q.tolist(), stroke=contour_color, stroke_width=line_thickness+line_thickness/2,
                          stroke_linecap="round"))
 
     if bond_type == 2:
