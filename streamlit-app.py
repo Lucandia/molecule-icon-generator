@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     input_type = st.selectbox("Create your icon by",
                               ['name', 'smiles', 'cas_number', 'stdinchi', 'stdinchikey'],
-                              help='Chose the input info of your molecule')
+                              help='Choose the input info of your molecule')
     def_dict = {'name': 'paracetamol',
                 'smiles': "CC(=O)Nc1ccc(cc1)O",
                 'cas_number': '103-90-2',
