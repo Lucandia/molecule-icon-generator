@@ -74,11 +74,14 @@ if __name__ == "__main__":
             'Change the color:',
             sorted(list(mig.color_map.keys())))
     with col2:
-        new_color[atom_color] = st.color_picker(f' Pick {atom_color} color', mig.color_map[atom_color])
+        new_color[atom_color] = st.color_picker(f' Pick {atom_color} color', mig.color_map[atom_color],
+                                                key="color_picker")
 
     if st.button('Reset colours', help='Reset colours as default CPK'):
         st.session_state['color_dict'] = mig.color_map.copy()
         new_color = st.session_state['color_dict']
+        if st.st.session_state.color_picker != new_color[atom_color]:
+            st.st.session_state.color_picker = new_color[atom_color]
 
     # catch error when using the cirpy library
     try:
