@@ -124,21 +124,18 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
     if bond_type == 2:
         start_1, start_2 = dist_point(start, d_space)
         end_1, end_2 = dist_point(end, d_space)
-        if shadow:
-            add_bond_contour(start_1, end_1)
-            add_bond_contour(start_2, end_2)
+        add_bond_contour(start_1, end_1)
+        add_bond_contour(start_2, end_2)
         add_bond(start_1, end_1)
         add_bond(start_2, end_2)
     else:
-        if shadow:
-            add_bond_contour(start, end)
+        add_bond_contour(start, end)
         add_bond(start, end)
     if bond_type == 3:
         start_1, start_2 = dist_point(start, t_space)
         end_1, end_2 = dist_point(end, t_space)
-        if shadow:
-            add_bond_contour(start_1, end_1)
-            add_bond_contour(start_2, end_2)
+        add_bond_contour(start_1, end_1)
+        add_bond_contour(start_2, end_2)
         add_bond(start_1, end_1)
         add_bond(start_2, end_2)
 
