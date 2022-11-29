@@ -118,7 +118,7 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         src.add(src.line(p.tolist(), q.tolist(), stroke=bondcolor, stroke_width=line_thickness,
                          stroke_linecap="round"))
     def add_bond_contour(p, q):
-        src.add(src.line(p.tolist(), q.tolist(), stroke=contour_color, stroke_width=line_thickness+line_thickness/2,
+        src.add(src.line(p.tolist(), q.tolist(), stroke=contour_color, stroke_width=line_thickness+line_thickness,
                          stroke_linecap="round"))
 
     if bond_type == 2:
@@ -225,7 +225,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
                 aromatic_index.add(atom1)
                 aromatic_index.add(atom2)
             add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor=atom_color['bond'],
-                         shadow_light=0.35,shadow=shadow)
+                         shadow_light=shadow_light, shadow=shadow)
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
     for i in reversed(range(len(mol.GetAtoms()))):
