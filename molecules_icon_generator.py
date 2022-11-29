@@ -97,13 +97,14 @@ def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, sh
     return
 
 
-def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575757'):
+def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575757', shadow_light=0.35):
     start = np.array((x1, y1))
     end = np.array((x2, y2))
     d_space = int(line_thickness * 1)
     t_space = int(line_thickness * 2)
     # calculate the degree of the bond line, y axis is reversed in images
     radians = math.atan2(-y1 + y2, x1 - x2) + math.pi/2  # add 90 degree to make the angle perpendicular
+    contour_color = shadow_color_correction(bondcolor, shadow_light)
 
     def dist_point(point, spacer):
         dist_x = int(math.cos(radians) * spacer)
@@ -117,7 +118,7 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         src.add(src.line(p.tolist(), q.tolist(), stroke=bondcolor, stroke_width=line_thickness,
                          stroke_linecap="round"))
     def add_bond_contour(p, q):
-        src.add(src.line(p.tolist(), q.tolist(), stroke=bondcolor, stroke_width=line_thickness+line_thickness/10,
+        src.add(src.line(p.tolist(), q.tolist(), stroke=contour_color, stroke_width=line_thickness+line_thickness/10,
                          stroke_linecap="round"))
 
     if bond_type == 2:
@@ -220,7 +221,8 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
                 bond_type = 3
                 aromatic_index.add(atom1)
                 aromatic_index.add(atom2)
-            add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor=atom_color['bond'])
+            add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor=atom_color['bond'],
+                         shadow_light=0.35,)
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
     for i in reversed(range(len(mol.GetAtoms()))):
