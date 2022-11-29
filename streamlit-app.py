@@ -103,13 +103,13 @@ if __name__ == "__main__":
     try:
         col1, col2 = st.columns(2)
         with col1:
-            icon_size = st.slider('Atom size', 0, 600, 100,
+            icon_size = st.slider('Atom size', 0, 300, 100,
                                   help='''Atom icons size in pixel. Default: 50''')
-            pos_multi = st.slider('Image size multiplier', 0, 960, 160,
+            pos_multi = st.slider('Image size multiplier', 0, 600, 200,
                                   help='''Multiply the position of the atoms with respect to the 2D structure.
                                   A higher multiplier leads to higher resolution. Default: 80''')
         with col2:
-            thickness = st.slider('Thickness', 0.0, 1.0, 1/3,
+            thickness = st.slider('Thickness', 0.0, 0.6, 0.2,
                                   help='''Bond and stroke thickness compared to atom radius.''')
             shadow_light = st.slider('Shadow light', 0.0, 1.0, 1 / 3, help='''Regulate the brightness of the shadow''')
 
