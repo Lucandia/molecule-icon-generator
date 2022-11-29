@@ -221,7 +221,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
                 bond_type = 3
                 aromatic_index.add(atom1)
                 aromatic_index.add(atom2)
-            add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor=atom_color['bond'],
+            add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor=atom_color['Bond'],
                          shadow_light=shadow_light, shadow=shadow)
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
