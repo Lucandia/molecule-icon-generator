@@ -74,7 +74,7 @@ def circ_post(degree, size, center):
     return x, y
 
 
-def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, shadow_deg=45, shadow_light=0.45,
+def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, shadow_deg=45, shadow_light=0.35,
                  thickness=1/3):
     r, g, b = hex_to_rgb(color)
     h, l, s = colorsys.rgb_to_hls(r, g, b)
@@ -127,7 +127,7 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
 def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False, single_bonds=False,
                 remove_H=False, verbose=False, save_svg=True, save_png=True, save_jpeg=True, save_pdf=True,
                atom_color=color_map, position_multiplier=160, atom_radius=100, bw=False, shadow=True,
-               black=False, thickness=1/4):
+               black=False, thickness=1/4, shadow_light=0.35):
     if black:
         atom_color = {key: '#000000' for key in atom_color}
     elif bw:
@@ -214,7 +214,8 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
         atom_y = atom_map[i][1] + dimension // 2
         if atom not in atom_color:
             atom = 'other'
-        add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow, thickness=thickness)
+        add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow, shadow_light=shadow_light,
+                     thickness=thickness)
 
     if rdkit_png:
         rdkit.Chem.Draw.MolToFile(mol, directory + os.sep + name + "_rdkit.png")
@@ -297,14 +298,22 @@ def parse():
     optional.add_argument('-b', "--black",
                           action='store_true',
                           help='Draw a black icon')
+    optional.add_argument('-t', "--thickness",
+                          type=float,
+                          default=0.35,
+                          help='Line thickness compared to atom size, range [0:1]')
+    optional.add_argument("--shadow_light",
+                          type=float,
+                          default=0.35,
+                          help='Select how dark the shadow should be in the range [0:1]')
     args = parser.parse_args()
     return args
-
 
 
 if __name__ == "__main__":
     parsed = parse()
     icon_print(parsed.SMILE, name=parsed.name, directory=parsed.directory, rdkit_svg=parsed.rdkit_svg,
-               single_bonds=parsed.single_bond, remove_H=parsed.remove_H, verbose=parsed.verbose, save_png=True, bw=parsed.black_and_white,
-               position_multiplier=int(160*parsed.position_multiplier), atom_radius=int(100*parsed.atom_multiplier),
-               shadow=not parsed.hide_shadows, black=parsed.black)
+               single_bonds=parsed.single_bond, remove_H=parsed.remove_H, verbose=parsed.verbose, save_png=True,
+               bw=parsed.black_and_white, position_multiplier=int(160*parsed.position_multiplier),
+               atom_radius=int(100*parsed.atom_multiplier), shadow=not parsed.hide_shadows, black=parsed.black,
+               shadow_light=parsed.shadow_light, thickness=parsed.thickness)
