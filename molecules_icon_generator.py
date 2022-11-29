@@ -67,6 +67,12 @@ def rgb_to_hex(color):
     return '#' + ''.join(check_len)
 
 
+def shadow_color_correction(color, shadow_light):
+    r, g, b = hex_to_rgb(color)
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    rgb = colorsys.hls_to_rgb(h, l*shadow_light, s)
+    return rgb_to_hex(rgb)
+
 def circ_post(degree, size, center):
     angle_rad = math.radians(degree)
     x = int(size*math.cos(angle_rad) + center[0])
@@ -76,10 +82,7 @@ def circ_post(degree, size, center):
 
 def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, shadow_deg=45, shadow_light=0.35,
                  thickness=1/3):
-    r, g, b = hex_to_rgb(color)
-    h, l, s = colorsys.rgb_to_hls(r, g, b)
-    rgb = colorsys.hls_to_rgb(h, l*shadow_light, s)
-    shadow_color = rgb_to_hex(rgb)
+    shadow_color = shadow_color_correction(color, shadow_light)
     src.add(src.circle(center=(center[0], center[1]), r=radius, fill=color, stroke=shadow_color, stroke_width=radius*thickness/2))
     if shadow:
         start_shade = circ_post(-shadow_deg, radius, center)
@@ -110,18 +113,30 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         pt2 = point - np.array((dist_x, -dist_y))
         return pt1, pt2
 
+    def add_bond(p, q):
+        src.add(src.line(p.tolist(), q.tolist(), stroke=bondcolor, stroke_width=line_thickness,
+                         stroke_linecap="round"))
+    def add_bond_contour(p, q):
+        src.add(src.line(p.tolist(), q.tolist(), stroke=bondcolor, stroke_width=line_thickness+line_thickness/10,
+                         stroke_linecap="round"))
+
     if bond_type == 2:
         start_1, start_2 = dist_point(start, d_space)
         end_1, end_2 = dist_point(end, d_space)
-        src.add(src.line(start_1.tolist(), end_1.tolist(), stroke=bondcolor, stroke_width=line_thickness))
-        src.add(src.line(start_2.tolist(), end_2.tolist(), stroke=bondcolor, stroke_width=line_thickness))
+        add_bond_contour(start_1, end_1)
+        add_bond_contour(start_2, end_2)
+        add_bond(start_1, end_1)
+        add_bond(start_2, end_2)
     else:
-        src.add(src.line(start.tolist(), end.tolist(), stroke=bondcolor, stroke_width=line_thickness))
+        add_bond_contour(start, end)
+        add_bond(start, end)
     if bond_type == 3:
         start_1, start_2 = dist_point(start, t_space)
         end_1, end_2 = dist_point(end, t_space)
-        src.add(src.line(start_1, end_1, stroke=bondcolor, stroke_width=line_thickness))
-        src.add(src.line(start_2, end_2, stroke=bondcolor, stroke_width=line_thickness))
+        add_bond_contour(start_1, end_1)
+        add_bond_contour(start_2, end_2)
+        add_bond(start_1, end_1)
+        add_bond(start_2, end_2)
 
 
 def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False, single_bonds=False,
