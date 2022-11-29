@@ -25,6 +25,8 @@ def render_svg(svg):
 if __name__ == "__main__":
     if 'color_dict' not in st.session_state:
         st.session_state['color_dict'] = mig.color_map.copy()
+    if 'color_picker' not in st.session_state:
+        st.session_state['color_picker'] = '#000000'
     new_color = st.session_state['color_dict']
 
     st.set_page_config(page_title="Molecule icons")
