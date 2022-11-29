@@ -25,9 +25,14 @@ def render_svg(svg):
 if __name__ == "__main__":
     if 'color_dict' not in st.session_state:
         st.session_state['color_dict'] = mig.color_map.copy()
+    if 'reset' in st.session_state:
+        st.session_state['reset'] = False
+
     new_color = st.session_state['color_dict']
-    if 'atom_color' in st.session_state and 'color_picker' in st.session_state:
+
+    if 'atom_color' in st.session_state and 'color_picker' in st.session_state and st.session_state['reset']:
         st.session_state.color_picker = new_color[st.session_state.atom_color]
+        st.session_state['reset'] = False
 
     st.set_page_config(page_title="Molecule icons")
     st.header('''
@@ -82,6 +87,7 @@ if __name__ == "__main__":
     if st.button('Reset colours', help='Reset colours as default CPK'):
         st.session_state['color_dict'] = mig.color_map.copy()
         new_color = st.session_state['color_dict']
+        st.session_state['reset'] = True
 
     # catch error when using the cirpy library
     try:
