@@ -109,7 +109,7 @@ if __name__ == "__main__":
                                   help='''Multiply the position of the atoms with respect to the 2D structure.
                                   A higher multiplier leads to higher resolution. Default: 80''')
         with col2:
-            thickness = st.slider('Thickness', 0.0, 2.0, 1/3,
+            thickness = st.slider('Thickness', 0.0, 1.0, 1/3,
                                   help='''Bond and stroke thickness compared to atom radius.''')
             shadow_light = st.slider('Shadow light', 0.0, 1.0, 1 / 3, help='''Regulate the brightness of the shadow''')
 
