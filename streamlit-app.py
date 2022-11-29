@@ -119,7 +119,7 @@ if __name__ == "__main__":
                        save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
                        thickness=thickness, shadow_light=shadow_light)
     except Exception as e:
-        st.error('''
+        st.error(f'''
         Rdkit failed in building the structure of the molecule or the Image is too big.\n
         Full error: {e}''')
         if img_format != 'svg':
