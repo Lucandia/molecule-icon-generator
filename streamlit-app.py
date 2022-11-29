@@ -25,7 +25,7 @@ def render_svg(svg):
 if __name__ == "__main__":
     if 'color_dict' not in st.session_state:
         st.session_state['color_dict'] = mig.color_map.copy()
-    if 'reset' in st.session_state:
+    if 'reset' not in st.session_state:
         st.session_state['reset'] = False
 
     new_color = st.session_state['color_dict']
