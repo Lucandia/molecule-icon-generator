@@ -111,7 +111,7 @@ if __name__ == "__main__":
         with col2:
             thickness = st.slider('Thickness', 0.0, 0.6, 0.2,
                                   help='''Bond and stroke thickness compared to atom radius.''')
-            shadow_light = st.slider('Shadow light', 0.0, 1.0, 1 / 3, help='''Regulate the brightness of the shadow''')
+            shadow_light = st.slider('Shadow/outline light', 0.0, 1.0, 1 / 3, help='''Regulate the brightness of the shadow''')
 
         # if not st.button('run'):
         #     st.stop()
