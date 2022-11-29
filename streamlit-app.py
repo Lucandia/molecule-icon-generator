@@ -132,8 +132,8 @@ if __name__ == "__main__":
                        thickness=thickness, shadow_light=shadow_light)
     except Exception as e:
         st.error(f'''
-        Rdkit failed in building the structure of the molecule or the Image is too big.\n
-        Full error: \n{e}''')
+        Rdkit failed in building the structure of the molecule or the Image is too big. Full error:\n
+        {e}''')
         if img_format != 'svg':
             st.write(f'Try to use the svg format')
         if input_type != 'smiles':
