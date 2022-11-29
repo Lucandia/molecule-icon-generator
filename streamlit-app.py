@@ -125,7 +125,7 @@ if __name__ == "__main__":
         if img_format != 'svg':
             st.write(f'Try to use the svg format')
         if input_type != 'smiles':
-            st.write(f'Try to use the smiles of the molecule instead of {input_type}')
+            st.write(f'Try to use the SMILES instead of {input_type}')
         st.stop()
 
     filename = 'molecular-icon.' + img_format
