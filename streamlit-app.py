@@ -10,6 +10,9 @@ import cirpy
 from cirpy import Molecule
 import base64
 import molecules_icon_generator as mig
+import warnings
+warnings.filterwarnings("ignore")  # brute force approach to avoid decompression bomb warning by pdf2image and PIL
+
 
 
 def render_svg(svg):
@@ -125,7 +128,7 @@ if __name__ == "__main__":
         if img_format != 'svg':
             st.write(f'Try to use the svg format')
         if input_type != 'smiles':
-            st.write(f'Try to use the SMILES instead of {input_type}')
+            st.write(f'Try to use the SMILES instead of {input_type} as input')
         st.stop()
 
     filename = 'molecular-icon.' + img_format
