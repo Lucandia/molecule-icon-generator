@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     input_type = st.selectbox("Create your icon by",
                               ['name', 'smiles', 'cas_number', 'stdinchi', 'stdinchikey'],
-                              help='Chose the input info of your moleculs')
+                              help='Chose the input info of your molecule')
     def_dict = {'name': 'paracetamol',
                 'smiles': "CC(=O)Nc1ccc(cc1)O",
                 'cas_number': '103-90-2',
@@ -113,13 +113,13 @@ if __name__ == "__main__":
         col1, col2 = st.columns(2)
         with col1:
             icon_size = st.slider('Atom size', 0, 300, 100,
-                                  help='''Atom icons size in pixel. Default: 50''')
+                                  help='''Atom icons radiuz.''')
             pos_multi = st.slider('Image size multiplier', 0, 600, 200,
                                   help='''Multiply the position of the atoms with respect to the 2D structure.
-                                  A higher multiplier leads to higher resolution. Default: 80''')
+                                  A higher multiplier leads to higher resolution.''')
         with col2:
             thickness = st.slider('Thickness', 0.0, 0.6, 0.2,
-                                  help='''Bond and stroke thickness compared to atom radius.''')
+                                  help='''Bond and stroke thicknesses over the atom radius.''')
             shadow_light = st.slider('Shadow/outline light', 0.0, 1.0, 1 / 3, help='''Regulate the brightness of the shadow''')
 
         # if not st.button('run'):
