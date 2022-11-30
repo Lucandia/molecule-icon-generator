@@ -1,5 +1,5 @@
 # Molecule-icons Generator!
-<img src="example/paracetamol.jpeg" width=100 height=100>
+<img src="example/paracetamol.jpeg" width=300 height=300>
 Generate nice icons of molecules from SMILES.
 
 This program follows the topology of SMILES chemical structures and creates an icon.
@@ -44,5 +44,5 @@ pip install -r requirements.txt
 
 ## Tip
 
-I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine below](paypal.me/lucamonari99)
-[![Donate](example/caffeine.jpeg)](paypal.me/lucamonari99)
+I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine below]([paypal.me/lucamonari99](https://paypal.me/lucamonari99?country.x=IT&locale.x=it_IT))
+[![Donate]<img src="example/paracetamol.jpeg" width=300 height=300>](https://paypal.me/lucamonari99?country.x=IT&locale.x=it_IT)
