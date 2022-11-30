@@ -42,7 +42,7 @@ pip install -r requirements.txt
  icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_svg = True, single_bonds = False, remove_H = False, verbose=False)
  ```
 
-## Tip
+## Donate
 
-I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine below]([paypal.me/lucamonari99](https://paypal.me/lucamonari99?country.x=IT&locale.x=it_IT))
-[![Donate]<img src="example/caffeine.jpeg" width=300 height=300>](https://paypal.me/lucamonari99)
+I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine below](https://paypal.me/lucamonari99)
+[<img src="example/caffeine.jpeg" width=300 height=300>](https://paypal.me/lucamonari99)
