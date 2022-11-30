@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     st.set_page_config(page_title="Molecule icons")
     st.header('''
-    Molecule icons generator!
+    Molecular Icons Generator!
     ''')
 
     st.text('''
