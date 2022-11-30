@@ -1,9 +1,9 @@
 # Molecule-icons Generator!
-<img src="example.png" width=35% height=35%>
+<img src="example/paracetamol.jpeg" width=100 height=100>
 Generate nice icons of molecules from SMILES.
 
-This program follows the topology of SMILES chemical structures and create an icon.
-The atoms colors are inspired by the [CPK coloring convention](https://sciencenotes.org/molecule-atom-colors-cpk-colors/)
+This program follows the topology of SMILES chemical structures and creates an icon.
+The atoms' colours are inspired by the [CPK colouring convention](https://sciencenotes.org/molecule-atom-colors-cpk-colors/)
 
 ## Try the web app:
 
@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 ### Step 3: Have Fun
 
-- Run the code from command line:
+- Run the code from the command line:
 
  ```
   python molecules_icon_generator.py "CC(=O)Nc1ccc(cc1)O" --name paracetamol --rdkit_svg
@@ -42,3 +42,7 @@ pip install -r requirements.txt
  icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_svg = True, single_bonds = False, remove_H = False, verbose=False)
  ```
 
+## Tip
+
+I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine below](paypal.me/lucamonari99)
+[![Donate](example/caffeine.jpeg)](paypal.me/lucamonari99)
