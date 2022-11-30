@@ -40,7 +40,7 @@ if __name__ == "__main__":
     ''')
 
     st.text('''
-    Generate icons of molecules from SMILES, Name, Cas-number, standard Inchi or standard InChIKey.
+    Generate icons of molecules from SMILES, Name, Cas-number, Inchi or InChIKey.
     ''')
     st.markdown(
         "For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git)")
