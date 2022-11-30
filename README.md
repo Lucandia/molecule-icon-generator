@@ -45,4 +45,5 @@ pip install -r requirements.txt
 ## Donate
 
 I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine below](https://paypal.me/lucamonari99)
+
 [<img src="example/caffeine.jpeg" width=300 height=300>](https://paypal.me/lucamonari99)
