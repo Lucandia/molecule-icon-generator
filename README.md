@@ -45,4 +45,4 @@ pip install -r requirements.txt
 ## Tip
 
 I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine below]([paypal.me/lucamonari99](https://paypal.me/lucamonari99?country.x=IT&locale.x=it_IT))
-[![Donate]<img src="example/paracetamol.jpeg" width=300 height=300>](https://paypal.me/lucamonari99?country.x=IT&locale.x=it_IT)
+[![Donate]<img src="example/caffeine.jpeg" width=300 height=300>](https://paypal.me/lucamonari99)
