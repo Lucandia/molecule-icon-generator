@@ -114,7 +114,7 @@ if __name__ == "__main__":
         with col1:
             icon_size = st.slider('Atom size', 0, 300, 100,
                                   help='''Atom icons radiuz.''')
-            pos_multi = st.slider('Image size multiplier', 0, 600, 200,
+            pos_multi = st.slider('Image size multiplier', 0, 900, 300,
                                   help='''Multiply the position of the atoms with respect to the 2D structure.
                                   A higher multiplier leads to higher resolution.''')
         with col2:
