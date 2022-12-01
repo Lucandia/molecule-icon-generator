@@ -169,7 +169,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
         rdDepictor.SetPreferCoordGen(True) # rdCoordGen default
         rdCoordGen.AddCoords(mol) # better conformation for macrocycles
     else:
-        AllChem.Compute2DCoords(mol) canonical rdkit conformation
+        AllChem.Compute2DCoords(mol) # canonical rdkit conformation
     
     mol.GetConformer()
     mol = rdkit.Chem.Draw.rdMolDraw2D.PrepareMolForDrawing(mol)
