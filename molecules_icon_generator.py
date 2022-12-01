@@ -47,6 +47,20 @@ color_map = {"H": "#FFFFFF", "D": "#FFFFC0", "T": "#FFFFA0", "He": "#D9FFFF", "L
              "Rf": "#CC0059", "Db": "#D1004F", "Sg": "#D90045", "Bh": "#E00038", "Hs": "#E6002E", "Mt": "#EB0026",
              'other': '#f5c2cb', 'Bond': '#575757'}
 
+atom_resize = {'All atoms': 1.0, 'H': 1.0, 'D': 1.0, 'T': 1.0, 'He': 1.0, 'Li': 1.0, 'Be': 1.0, 'B': 1.0, 'C': 1.0, 'C-13': 1.0,
+               'C-14': 1.0, 'N': 1.0, 'N-15': 1.0, 'O': 1.0, 'F': 1.0, 'Ne': 1.0, 'Na': 1.0, 'Mg': 1.0, 'Al': 1.0,
+               'Si': 1.0, 'P': 1.0, 'S': 1.0, 'Cl': 1.0, 'Ar': 1.0, 'K': 1.0, 'Ca': 1.0, 'Sc': 1.0, 'Ti': 1.0, 'V': 1.0,
+               'Cr': 1.0, 'Mn': 1.0, 'Fe': 1.0, 'Co': 1.0, 'Ni': 1.0, 'Cu': 1.0, 'Zn': 1.0, 'Ga': 1.0, 'Ge': 1.0,
+               'As': 1.0, 'Se': 1.0, 'Br': 1.0, 'Kr': 1.0, 'Rb': 1.0, 'Sr': 1.0, 'Y': 1.0, 'Zr': 1.0, 'Nb': 1.0,
+               'Mo': 1.0, 'Tc': 1.0, 'Ru': 1.0, 'Rh': 1.0, 'Pd': 1.0, 'Ag': 1.0, 'Cd': 1.0, 'In': 1.0, 'Sn': 1.0,
+               'Sb': 1.0, 'Te': 1.0, 'I': 1.0, 'Xe': 1.0, 'Cs': 1.0, 'Ba': 1.0, 'La': 1.0, 'Ce': 1.0, 'Pr': 1.0,
+               'Nd': 1.0, 'Pm': 1.0, 'Sm': 1.0, 'Eu': 1.0, 'Gd': 1.0, 'Tb': 1.0, 'Dy': 1.0, 'Ho': 1.0, 'Er': 1.0,
+               'Tm': 1.0, 'Yb': 1.0, 'Lu': 1.0, 'Hf': 1.0, 'Ta': 1.0, 'W': 1.0, 'Re': 1.0, 'Os': 1.0, 'Ir': 1.0,
+               'Pt': 1.0, 'Au': 1.0, 'Hg': 1.0, 'Tl': 1.0, 'Pb': 1.0, 'Bi': 1.0, 'Po': 1.0, 'At': 1.0, 'Rn': 1.0,
+               'Fr': 1.0, 'Ra': 1.0, 'Ac': 1.0, 'Th': 1.0, 'Pa': 1.0, 'U': 1.0, 'Np': 1.0, 'Pu': 1.0, 'Am': 1.0,
+               'Cm': 1.0, 'Bk': 1.0, 'Cf': 1.0, 'Es': 1.0, 'Fm': 1.0, 'Md': 1.0, 'No': 1.0, 'Lr': 1.0, 'Rf': 1.0,
+               'Db': 1.0, 'Sg': 1.0, 'Bh': 1.0, 'Hs': 1.0, 'Mt': 1.0, 'other': 1.0}
+
 
 def hex_to_rgb(color):
     r = int(color[1:3], 16)
@@ -75,6 +89,7 @@ def shadow_color_correction(color, shadow_light):
     h, l, s = colorsys.rgb_to_hls(r, g, b)
     rgb = colorsys.hls_to_rgb(h, l*shadow_light, s)
     return rgb_to_hex(rgb)
+
 
 def circ_post(degree, size, center):
     angle_rad = math.radians(degree)
@@ -146,7 +161,7 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
 def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False, single_bonds=False,
                 remove_H=False, verbose=False, save_svg=True, save_png=True, save_jpeg=True, save_pdf=True,
                atom_color=color_map, position_multiplier=160, atom_radius=100, bw=False, shadow=True,
-               black=False, thickness=1/4, shadow_light=0.35, nice_conformation=True):
+               black=False, thickness=1/4, shadow_light=0.35, nice_conformation=True, radius_multi=atom_resize):
     if black:
         atom_color = {key: '#000000' for key in atom_color}
     elif bw:
@@ -244,7 +259,8 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
         atom_y = atom_map[i][1] + dimension // 2
         if atom not in atom_color:
             atom = 'other'
-        add_atom_svg(svg, (atom_x, atom_y), atom_radius, atom_color[atom], shadow=shadow, shadow_light=shadow_light,
+        corrected_radius = atom_radius * radius_multi[atom]  # resize the atom dimension
+        add_atom_svg(svg, (atom_x, atom_y), corrected_radius, atom_color[atom], shadow=shadow, shadow_light=shadow_light,
                      thickness=thickness)
 
     if rdkit_png:
