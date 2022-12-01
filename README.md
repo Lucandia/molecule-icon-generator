@@ -42,6 +42,12 @@ pip install -r requirements.txt
  icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_svg = True, single_bonds = False, remove_H = False, verbose=False)
  ```
 
+- Or use the Streamlit functionalities! From the terminal run:
+
+ ```
+python -m streamlit run streamlit-app.py
+ ```
+ 
 ## Donate
 
 I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click here!](https://www.paypal.com/donate/?hosted_button_id=V4LJ3Z3B3KXRY)
