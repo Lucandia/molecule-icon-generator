@@ -14,6 +14,9 @@ import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import Draw
+from rdkit.Chem.Draw import rdMolDraw2D
+from rdkit.Chem import rdCoordGen
+from rdkit.Chem import rdDepictor
 import math
 import itertools
 import argparse
@@ -143,7 +146,7 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
 def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False, single_bonds=False,
                 remove_H=False, verbose=False, save_svg=True, save_png=True, save_jpeg=True, save_pdf=True,
                atom_color=color_map, position_multiplier=160, atom_radius=100, bw=False, shadow=True,
-               black=False, thickness=1/4, shadow_light=0.35):
+               black=False, thickness=1/4, shadow_light=0.35, nice_conformation=True):
     if black:
         atom_color = {key: '#000000' for key in atom_color}
     elif bw:
@@ -160,7 +163,14 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
     mol = Chem.MolFromSmiles(SMILES)
     if not remove_H:
         mol = Chem.AddHs(mol)
-    AllChem.Compute2DCoords(mol)
+    else:
+        mol = Chem.RemoveHs(mol)
+    if nice_conformation:
+        rdDepictor.SetPreferCoordGen(True) # rdCoordGen default
+        rdCoordGen.AddCoords(mol) # better conformation for macrocycles
+    else:
+        AllChem.Compute2DCoords(mol) canonical rdkit conformation
+    
     mol.GetConformer()
     mol = rdkit.Chem.Draw.rdMolDraw2D.PrepareMolForDrawing(mol)
 
@@ -239,7 +249,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
     if rdkit_png:
         rdkit.Chem.Draw.MolToFile(mol, directory + os.sep + name + "_rdkit.png")
     if rdkit_svg:
-        drawer = rdkit.Chem.Draw.rdMolDraw2D.MolDraw2DSVG(300, 300)
+        drawer = rdMolDraw2D.MolDraw2DSVG(300, 300)
         drawer.DrawMolecule(mol)
         drawer.FinishDrawing()
         rdkit_svg_text = drawer.GetDrawingText()
