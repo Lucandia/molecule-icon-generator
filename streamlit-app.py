@@ -197,3 +197,15 @@ if __name__ == "__main__":
                                      data=file,
                                      file_name=filename,
                                      mime=f"image/{img_format}")
+
+    st.markdown('I enjoy working on this project in my free time, especially at night. '
+                'If you want to support me with a coffee, just ['
+                'click on the caffeine:](https://www.paypal.com/donate/?hosted_button_id=V4LJ3Z3B3KXRY)')
+
+    html_string = '''<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="V4LJ3Z3B3KXRY" />
+<input type="image" src="https://pics.paypal.com/00/s/MTRiMDhhZmMtMTE0YS00MWNjLWJmYjItM2RhZjAwNmFjZGVh/file.PNG" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_IT/i/scr/pixel.gif" width="1" height="1" />
+</form>
+'''
+    st.markdown(html_string, unsafe_allow_html=True)

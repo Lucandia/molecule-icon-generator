@@ -44,6 +44,11 @@ pip install -r requirements.txt
 
 ## Donate
 
-I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine below](https://paypal.me/lucamonari99)
+I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click on the caffeine:](https://www.paypal.com/donate/?hosted_button_id=V4LJ3Z3B3KXRY)
 
-[<img src="example/caffeine.jpeg" width=300 height=300>](https://paypal.me/lucamonari99)
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="V4LJ3Z3B3KXRY" />
+<input type="image" src="https://pics.paypal.com/00/s/MTRiMDhhZmMtMTE0YS00MWNjLWJmYjItM2RhZjAwNmFjZGVh/file.PNG" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_IT/i/scr/pixel.gif" width="1" height="1" />
+</form>
+
