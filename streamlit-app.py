@@ -122,14 +122,21 @@ if __name__ == "__main__":
                                   help='''Bond and stroke thicknesses over the atom radius.''')
             shadow_light = st.slider('Shadow/outline light', 0.0, 1.0, 1 / 3, help='''Regulate the brightness of the shadow''')
 
+        conf = not st.checkbox('Switch conformation', value=False)
+
+        if conf:
+            img_multi = pos_multi
+        else:
+            img_multi = pos_multi * 2 / 3
+
         # if not st.button('run'):
         #     st.stop()
         mig.icon_print(smiles, name='molecular-icon', rdkit_svg=rdkit_draw,
                        single_bonds=single_bonds, remove_H=remove_H,
-                       position_multiplier=pos_multi, atom_radius=icon_size, bw=bw,
+                       position_multiplier=img_multi, atom_radius=icon_size, bw=bw,
                        atom_color=new_color, shadow=not h_shadow, black=black,
                        save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
-                       thickness=thickness, shadow_light=shadow_light)
+                       thickness=thickness, shadow_light=shadow_light, nice_conformation=conf)
     except Exception as e:
         st.error(f'''
         Rdkit failed in building the structure of the molecule or the Image is too big. Full error:
