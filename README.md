@@ -44,5 +44,5 @@ pip install -r requirements.txt
 
 ## Donate
 
-I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click here!]
+I enjoy working on this project in my free time, especially at night. If you want to support me with a coffee, just [click here!](https://www.paypal.com/donate/?hosted_button_id=V4LJ3Z3B3KXRY)
 
