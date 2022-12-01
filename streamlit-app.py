@@ -39,7 +39,6 @@ if __name__ == "__main__":
         st.session_state.color_picker = new_color[st.session_state.atom_color_select]
         st.session_state['reset_color'] = False
     if 'atom_size_select' in st.session_state and 'sizes_slider' in st.session_state and st.session_state['reset_size']:
-        st.session_state.sizes_slider = resize[st.session_state.atom_color_select]
         st.session_state['reset_size'] = False
 
     st.set_page_config(page_title="Molecule icons")
@@ -91,7 +90,7 @@ if __name__ == "__main__":
             'Change the color:',
             sorted(list(mig.color_map.keys())), key='atom_color_select')
     with col2:
-        new_color[atom_color] = st.color_picker(f' Pick {atom_color} color', mig.color_map[atom_color],
+        new_color[atom_color] = st.color_picker(f' Pick {atom_color} color', new_color[atom_color],
                                                 key="color_picker")
     with col3:
         st.write('\n')
@@ -107,7 +106,7 @@ if __name__ == "__main__":
             'Change the size:',
             ['All atoms']+sorted(list(mig.atom_resize.keys())), key='atom_size_select')
     with col2:
-        resize[atom_size] = st.slider(f'Multiply the size of {atom_size}', 0.0, 3.0, 1.0, key='sizes_slider',
+        resize[atom_size] = st.slider(f'Multiply the size of {atom_size}', 0.0, 3.0, resize[atom_size], key='sizes_slider',
                                       help='''Increase or decrease the size of one specific atom''')
     with col3:
         st.write('\n')
