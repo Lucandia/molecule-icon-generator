@@ -31,6 +31,8 @@ if __name__ == "__main__":
         st.session_state['reset_color'] = False
     if 'reset_size' not in st.session_state:
         st.session_state['reset_size'] = False
+    if 'last_atom_size' not in st.session_state:
+        st.session_state['last_atom_size'] = None
 
     new_color = st.session_state['color_dict']
     resize = st.session_state['resize_dict']
@@ -39,7 +41,10 @@ if __name__ == "__main__":
         st.session_state.color_picker = new_color[st.session_state.atom_color_select]
         st.session_state['reset_color'] = False
     if 'atom_size_select' in st.session_state and 'sizes_slider' in st.session_state and st.session_state['reset_size']:
+        st.session_state['last_atom_size'] = None
         st.session_state['reset_size'] = False
+    last_atom_size = st.session_state['last_atom_size']
+
 
     st.set_page_config(page_title="Molecule icons")
     st.header('''
@@ -106,8 +111,13 @@ if __name__ == "__main__":
             'Change the size:',
             ['All atoms']+sorted(list(mig.atom_resize.keys())), key='atom_size_select')
     with col2:
-        resize[atom_size] = st.slider(f'Multiply the size of {atom_size}', 0.0, 3.0, resize[atom_size], key='sizes_slider',
+        if last_atom_size != atom_size:
+            def_value = resize[atom_size]
+        else:
+            def_value = None
+        resize[atom_size] = st.slider(f'Multipy {atom_size} radius', 0.0, 3.0, value=def_value, key='sizes_slider',
                                       help='''Increase or decrease the size of one specific atom''')
+        st.session_state['last_atom_size'] = atom_size
     with col3:
         st.write('\n')
         if st.button('Reset atoms size', help='Reset size to 1 for all atoms', key='reset_size_but'):
