@@ -55,7 +55,7 @@ if __name__ == "__main__":
     Generate icons of molecules from SMILES, Name, Cas-number, Inchi or InChIKey.
     ''')
     st.markdown(
-        "For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git)")
+        "For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git). [DOI](https://doi.org/10.5281/zenodo.7388429): 10.5281/ZENODO.7388429.")
 
     input_type = st.selectbox("Create your icon by",
                               ['name', 'smiles', 'cas_number', 'stdinchi', 'stdinchikey'],
@@ -188,7 +188,7 @@ if __name__ == "__main__":
                                  mime=f"image/{img_format}")
 
         st.markdown('''
-        Thanks for using the Molecules icons generators! Please cite this work: [![DOI](https://zenodo.org/badge/530035520.svg)](https://zenodo.org/badge/latestdoi/530035520)
+        Thanks for using the Molecules icons generators! Please [cite this work](https://doi.org/10.5281/zenodo.7388429): [![DOI](https://zenodo.org/badge/530035520.svg)](https://zenodo.org/badge/latestdoi/530035520)
         ''')
     st.write('''
     Image SVG preview:
