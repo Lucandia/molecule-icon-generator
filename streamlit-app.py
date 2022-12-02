@@ -187,9 +187,9 @@ if __name__ == "__main__":
                                  file_name=filename,
                                  mime=f"image/{img_format}")
 
-    st.write('''
-    Thanks for using the Molecules icons generators!
-    ''')
+        st.markdown('''
+        Thanks for using the Molecules icons generators! Pleace cite this work: [![DOI](https://zenodo.org/badge/530035520.svg)](https://zenodo.org/badge/latestdoi/530035520)
+        ''')
     st.write('''
     Image SVG preview:
     ''')
