@@ -209,7 +209,7 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
     # get the maximum position from the atom (positive or negative)
     max_pos = max([abs(pos) for pos in list(itertools.chain(*list(atom_map.values())))])
     # to the max position we have to add width of the atom icons (*2 because the
-    max_tot_pos = max_pos + atom_radius * 2
+    max_tot_pos = max_pos + atom_radius * max(radius_multi.values()) * 2
     # multiply for 2 because the max position is considered from the center of the image
     dimension = int(max_tot_pos * 2)
     # create the svg Drawing
