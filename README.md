@@ -11,6 +11,14 @@ The atoms' colours are inspired by the [CPK colouring convention](https://scienc
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://molecule-icon-generator.streamlit.app/)
 
+## Cite this work:
+
+```
+Lmonari5. Lmonari5/Molecule-Icon-Generator: Molecule-Icon-Generator_stable; Zenodo, 2022. https://doi.org/10.5281/ZENODO.7388429.
+```
+[![DOI](https://zenodo.org/badge/530035520.svg)](https://zenodo.org/badge/latestdoi/530035520)
+
+## Run it on local:
 
 ### Step 1: clone the repository
 
