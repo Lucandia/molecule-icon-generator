@@ -193,7 +193,7 @@ if __name__ == "__main__":
         svg_text = f.read()
         render_svg(svg_text)
         with open("molecular-icon_rdkit.svg", "rb") as file:
-            btn = st.download_button(label="Download icon",
+            btn = st.download_button(label="Download RDKIT icon",
                                      data=file,
                                      file_name=filename,
                                      mime=f"image/{img_format}")
