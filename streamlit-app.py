@@ -37,14 +37,14 @@ if __name__ == "__main__":
     new_color = st.session_state['color_dict']
     resize = st.session_state['resize_dict']
 
-    if 'atom_color_select' in st.session_state and 'color_picker' in st.session_state and st.session_state['reset_color']:
+    if 'atom_color_select' in st.session_state and 'color_picker' in st.session_state and st.session_state[
+        'reset_color']:
         st.session_state.color_picker = new_color[st.session_state.atom_color_select]
         st.session_state['reset_color'] = False
     if 'atom_size_select' in st.session_state and 'sizes_slider' in st.session_state and st.session_state['reset_size']:
         st.session_state['last_atom_size'] = None
         st.session_state['reset_size'] = False
     last_atom_size = st.session_state['last_atom_size']
-
 
     st.set_page_config(page_title="Molecule icons")
     st.header('''
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     with col1:
         atom_size = st.selectbox(
             'Change the size:',
-            ['All atoms']+sorted(list(mig.atom_resize.keys())), key='atom_size_select')
+            ['All atoms'] + sorted(list(mig.atom_resize.keys())), key='atom_size_select')
     with col2:
         if last_atom_size != atom_size:
             def_value = resize[atom_size]
@@ -166,21 +166,23 @@ if __name__ == "__main__":
             img_multi = pos_multi
         else:
             img_multi = pos_multi * 2 / 3
-        mig.icon_print(smiles, name='molecular-icon', rdkit_svg=rdkit_draw,
-                       single_bonds=single_bonds, remove_H=remove_H,
-                       position_multiplier=img_multi, atom_radius=icon_size, bw=bw, radius_multi=resize,
+        mol, at_map, type_map, bond_map = mig.parse_structure(smiles, position_multiplier=img_multi,
+                                                              remove_H=remove_H)
+        mig.icon_print(mol, at_map, type_map, bond_map, name='molecular-icon', rdkit_svg=rdkit_draw,
+                       single_bonds=single_bonds, atom_radius=icon_size, bw=bw, radius_multi=resize,
                        atom_color=new_color, shadow=not h_shadow, black=black,
                        save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
                        thickness=thickness, shadow_light=shadow_light, nice_conformation=conf)
+
     except Exception as e:
-            st.error(f'''
+        st.error(f'''
             Rdkit failed in building the structure of the molecule or the Image is too big. Full error:
             {e}''')
-            if img_format != 'svg':
-                st.write(f'Try to use the svg format')
-            if input_type != 'smiles':
-                st.write(f'Try to use the SMILES instead of {input_type} as input')
-            st.stop()
+        if img_format != 'svg':
+            st.write(f'Try to use the svg format')
+        if input_type != 'smiles':
+            st.write(f'Try to use the SMILES instead of {input_type} as input')
+        st.stop()
 
     filename = 'molecular-icon.' + img_format
     with open(filename, "rb") as file:

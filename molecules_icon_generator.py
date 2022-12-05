@@ -85,7 +85,8 @@ def hex_to_rgb(color):
     return r, g, b
 
 
-def rgb_to_hex(color):  # based on https://stackoverflow.com/questions/3380726/converting-an-rgb-color-tuple-to-a-hexidecimal-string
+def rgb_to_hex(
+        color):  # based on https://stackoverflow.com/questions/3380726/converting-an-rgb-color-tuple-to-a-hexidecimal-string
     """It takes the rgb tuple and returns the hexadecimal string of the color.
 
     Parameters
@@ -295,7 +296,7 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         add_bond(start_2, end_2)
 
 
-def parse_structure(mol, position_multiplier, verbose=False):
+def parse_structure(SMILES, position_multiplier, verbose=False, remove_H=True, nice_conformation=True, dimension=2):
     """It takes a molecule object and a position multiplier, and returns a list of dictionary with the atoms and bonds
     maps.
 
@@ -317,94 +318,6 @@ def parse_structure(mol, position_multiplier, verbose=False):
     atom_map = dict()
     atom_type_map = dict()
     atom_bond_map = dict()
-    for i, atom in enumerate(mol.GetAtoms()):
-        positions = mol.GetConformer().GetAtomPosition(i)
-        atom_symbol = atom.GetSymbol()
-        x = int(positions.x * position_multiplier)
-        y = int(positions.y * position_multiplier)
-        z = int(positions.z * position_multiplier)
-        atom_map[i] = (x, -y)  # y-axis of an image is the inverse
-        atom_bonds = rdkit.Chem.rdchem.Atom.GetBonds(atom)
-        atom_bond_map[i] = len(atom_bonds)
-        atom_type_map[i] = atom_symbol
-        if verbose:
-            print(atom_symbol, x, y, z)
-    return atom_map, atom_type_map, atom_bond_map
-
-
-def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False,
-               single_bonds=False, remove_H=False, verbose=False, save_svg=True, save_png=False, save_jpeg=False,
-               save_pdf=False, atom_color=color_map, position_multiplier=160, atom_radius=100, bw=False, shadow=True,
-               black=False, thickness=1/4, shadow_light=0.35, nice_conformation=True, radius_multi=atom_resize):
-    """This function takes a SMILES string and returns an icon of the molecule, in format PNG, SVG, JPEG, and PDF.
-
-    Parameters
-    ----------
-    SMILES : string
-        The SMILES string of the molecule you want to draw.
-    name : string, default: 'molecule_icon'
-        The name of the file to be saved.
-    directory : string, default: os.getcwd()
-        The directory to save the image in.
-    rdkit_png : bool, optional
-        If True, will use RDKit to generate a PNG image of the default structure.
-    rdkit_svg : bool, optional
-        If True, will use RDKit to generate an SVG image of the default structure.
-    single_bonds : bool, optional
-        If True, all bonds will be single bonds.
-    remove_H : bool, optional
-        Remove all non-chiral hydrogen from the molecule.
-    verbose : bool, optional
-        Prints out the atoms coordinates.
-    save_svg : bool, default: True
-        Save the SVG icon format.
-    save_png : bool, default: False
-        Save the SVG, PDF and PNG icon formats.
-    save_jpeg : bool, default: False
-        Save the SVG, PDF and JPEG icon formats.
-    save_pdf : bool, default: False
-        Save the SVG and PDF icon formats.
-    atom_color : dictionary, default: color_map
-        a dictionary of atom colors. The keys are the atom symbols, and the values are the hex colors.
-    position_multiplier : int, default: 160
-        This is the distance between atoms.
-    atom_radius : int, default: 100
-        The radius of the atoms in the icon.
-    bw : bool, optional
-        Draw a black image with white atoms.
-    shadow : bool, optional
-        Whether to add a shadow to the image or not.
-    black : bool, optional
-        If True, the molecule will be drawn in full black.
-    thickness : float, default: 1/4
-        The thickness of the bonds compared to the atom radius.
-    shadow_light : float, default: 0.35
-        How light the shadow is. 0.35 is a good value.
-    nice_conformation : bool, default: True
-        If True, the molecule will be put into a nice conformation.
-    radius_multi : dictionary, default: atom_resize
-        A dictionary containing the multiplier for each atom. It multiplies the atom radius.
-
-    Returns
-    -------
-    svg.Drawing
-        The svg object.
-
-    """
-
-    if black:
-        atom_color = {key: '#000000' for key in atom_color}  # set all colors black
-    elif bw:  # set all atoms black
-        atom_color = {key: '#ffffff' for key in atom_color}
-        shadow_light = 0
-        shadow = False
-        atom_color['bond'] = '#000000'
-
-    if '.svg' in name:
-        fullname = directory + os.sep + name
-    else:
-        fullname = directory + os.sep + name + '.svg'
-
     mol = Chem.MolFromSmiles(SMILES)  # read the molecule
     if not remove_H:
         mol = Chem.AddHs(mol)  # add Hydrogens
@@ -419,9 +332,23 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
 
     mol.GetConformer()  # load the conformer
     mol = rdkit.Chem.Draw.rdMolDraw2D.PrepareMolForDrawing(mol)  # clean the conformer
+    for i, atom in enumerate(mol.GetAtoms()):
+        positions = mol.GetConformer().GetAtomPosition(i)
+        atom_symbol = atom.GetSymbol()
+        x = int(positions.x * position_multiplier)
+        y = int(positions.y * position_multiplier)
+        z = int(positions.z * position_multiplier)
+        atom_map[i] = (x, -y)  # y-axis of an image is the inverse
+        atom_bonds = rdkit.Chem.rdchem.Atom.GetBonds(atom)
+        atom_bond_map[i] = len(atom_bonds)
+        atom_type_map[i] = atom_symbol
+        if verbose:
+            print(atom_symbol, x, y, z)
+    return mol, atom_map, atom_type_map, atom_bond_map
 
-    atom_map, atom_type_map, atom_bond_map = parse_structure(mol, position_multiplier, verbose=False)
 
+def build_svg(mol, fullname, atom_map, atom_type_map, atom_bond_map, atom_radius=100, atom_color=color_map,
+              radius_multi=atom_resize, thickness=1 / 4, shadow_light=0.35, shadow=False, single_bonds=False):
     # get the maximum position from the atom (positive or negative)
     max_pos = max([abs(pos) for pos in list(itertools.chain(*list(atom_map.values())))])
     # to the max position we have to add width of the atom icons (*2 for the diameter)
@@ -478,6 +405,83 @@ def icon_print(SMILES, name='molecule_icon', directory=os.getcwd(), rdkit_png=Fa
         add_atom_svg(svg, (atom_x, atom_y), corrected_radius, atom_color[atom], shadow=shadow,
                      shadow_light=shadow_light,
                      thickness=thickness)
+    return svg
+
+
+def icon_print(mol, atom_map, atom_type_map, atom_bond_map, name='molecule_icon', directory=os.getcwd(),
+               single_bonds=False, save_svg=True, save_png=False, save_jpeg=False, rdkit_png=False, rdkit_svg=False,
+               save_pdf=False, atom_color=color_map, atom_radius=100, bw=False, shadow=True,
+               black=False, thickness=1 / 4, shadow_light=0.35, radius_multi=atom_resize):
+    """This function takes a SMILES string and returns an icon of the molecule, in format PNG, SVG, JPEG, and PDF.
+
+    Parameters
+    ----------
+    SMILES : string
+        The SMILES string of the molecule you want to draw.
+    name : string, default: 'molecule_icon'
+        The name of the file to be saved.
+    directory : string, default: os.getcwd()
+        The directory to save the image in.
+    rdkit_png : bool, optional
+        If True, will use RDKit to generate a PNG image of the default structure.
+    rdkit_svg : bool, optional
+        If True, will use RDKit to generate an SVG image of the default structure.
+    single_bonds : bool, optional
+        If True, all bonds will be single bonds.
+    remove_H : bool, optional
+        Remove all non-chiral hydrogen from the molecule.
+    verbose : bool, optional
+        Prints out the atoms coordinates.
+    save_svg : bool, default: True
+        Save the SVG icon format.
+    save_png : bool, default: False
+        Save the SVG, PDF and PNG icon formats.
+    save_jpeg : bool, default: False
+        Save the SVG, PDF and JPEG icon formats.
+    save_pdf : bool, default: False
+        Save the SVG and PDF icon formats.
+    atom_color : dictionary, default: color_map
+        a dictionary of atom colors. The keys are the atom symbols, and the values are the hex colors.
+    position_multiplier : int, default: 160
+        This is the distance between atoms.
+    atom_radius : int, default: 100
+        The radius of the atoms in the icon.
+    bw : bool, optional
+        Draw a black image with white atoms.
+    shadow : bool, optional
+        Whether to add a shadow to the image or not.
+    black : bool, optional
+        If True, the molecule will be drawn in full black.
+    thickness : float, default: 1/4
+        The thickness of the bonds compared to the atom radius.
+    shadow_light : float, default: 0.35
+        How light the shadow is. 0.35 is a good value.
+    nice_conformation : bool, default: True
+        If True, the molecule will be put into a nice conformation.
+    radius_multi : dictionary, default: atom_resize
+        A dictionary containing the multiplier for each atom. It multiplies the atom radius.
+
+    Returns
+    -------
+    svg.Drawing
+        The svg object.
+
+    """
+    if black:
+        atom_color = {key: '#000000' for key in atom_color}  # set all colors black
+    elif bw:  # set all atoms black
+        atom_color = {key: '#ffffff' for key in atom_color}
+        shadow_light = 0
+        shadow = False
+        atom_color['bond'] = '#000000'
+    if '.svg' in name:
+        fullname = directory + os.sep + name
+    else:
+        fullname = directory + os.sep + name + '.svg'
+
+    svg = build_svg(mol, fullname, atom_map, atom_type_map, atom_bond_map, atom_radius=atom_radius,
+                    atom_color=color_map, radius_multi=radius_multi, thickness=thickness, shadow_light=shadow_light,
+                    shadow=shadow, single_bonds=single_bonds)
 
     if rdkit_png:
         rdkit.Chem.Draw.MolToFile(mol, directory + os.sep + name + "_rdkit.png")
@@ -574,8 +578,11 @@ def parse():
 
 if __name__ == "__main__":
     parsed = parse()
-    icon_print(parsed.SMILE, name=parsed.name, directory=parsed.directory, rdkit_svg=parsed.rdkit_svg,
-               single_bonds=parsed.single_bond, remove_H=parsed.remove_H, verbose=parsed.verbose, save_png=True,
-               bw=parsed.black_and_white, position_multiplier=int(160 * parsed.position_multiplier),
-               atom_radius=int(100 * parsed.atom_multiplier), shadow=not parsed.hide_shadows, black=parsed.black,
-               shadow_light=parsed.shadow_light, thickness=parsed.thickness)
+    mol, at_map, type_map, bond_map = parse_structure(parsed.SMILE,
+                                                      position_multiplier=int(160 * parsed.position_multiplier),
+                                                      verbose=parsed.verbose,
+                                                      remove_H=parsed.remove_H)
+    icon_print(mol, at_map, type_map, bond_map, name=parsed.name, directory=parsed.directory,
+               rdkit_svg=parsed.rdkit_svg, single_bonds=parsed.single_bond, save_png=True,
+               bw=parsed.black_and_white, atom_radius=int(100 * parsed.atom_multiplier), thickness=parsed.thickness,
+               shadow=not parsed.hide_shadows, black=parsed.black, shadow_light=parsed.shadow_light)
