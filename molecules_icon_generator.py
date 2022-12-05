@@ -85,7 +85,7 @@ def hex_to_rgb(color):
     return r, g, b
 
 
-def rgb_to_hex(color):
+def rgb_to_hex(color):  # based on https://stackoverflow.com/questions/3380726/converting-an-rgb-color-tuple-to-a-hexidecimal-string
     """It takes the rgb tuple and returns the hexadecimal string of the color.
 
     Parameters
@@ -99,18 +99,7 @@ def rgb_to_hex(color):
         The hexadecimal color code, it starts with a '#'.
 
     """
-    r = hex(int(color[0]))[2:]
-    g = hex(int(color[1]))[2:]
-    b = hex(int(color[2]))[2:]
-    check_len = []
-    for i in [r, g, b]:
-        if len(i) < 1:
-            check_len.append('00')
-        elif len(i) < 2:
-            check_len.append('0' + i)
-        else:
-            check_len.append(i)
-    return '#' + ''.join(check_len)
+    return '#%02x%02x%02x' % color
 
 
 def shadow_color_correction(color, light_multiplier):
