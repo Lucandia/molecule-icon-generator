@@ -83,20 +83,18 @@ if __name__ == "__main__":
 
     # catch error when using the cirpy library
     try:
-        if input_type == 'name':
-            input_string = cirpy.resolve(input_string, 'smiles')
-        mol = Molecule(input_string)
-        smiles = mol.smiles
+        if input_type == 'smiles': # if the input is a smile, use it directly ignoring the cirpy smiles
+            smiles = input_string
+        else:
+            if input_type == 'name':
+                input_string = cirpy.resolve(input_string, 'smiles')
+            mol = Molecule(input_string)
+            smiles = mol.smiles
     except Exception as e:
         st.write(f'''
         The cirpy python library is not able to resolve your input {input_type}.
         You can use SMILES to skip the cirpy library.
         ''')
-        if input_type != 'smiles':
-            st.stop()
-
-    if input_type == 'smiles':  # if the input is a smile, use it directly ignoring the cirpy smiles
-        smiles = input_string
 
     # try to build the mol structure
     try:
