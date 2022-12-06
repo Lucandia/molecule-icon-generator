@@ -485,7 +485,7 @@ def icon_print(mol, atom_map, atom_type_map, atom_bond_map, name='molecule_icon'
     else:
         fullname = directory + os.sep + name + '.svg'
 
-    svg = build_svg(mol, fullname, atom_map, atom_type_map, atom_bond_map, atom_radius=atom_radius,
+    svg = build_svg(mol, fullname, atom_radius=atom_radius,
                     atom_color=color_map, radius_multi=radius_multi, thickness=thickness, shadow_light=shadow_light,
                     shadow=shadow, single_bonds=single_bonds)
 
