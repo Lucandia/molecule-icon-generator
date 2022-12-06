@@ -371,7 +371,7 @@ def build_svg(mol, fullname, atom_radius=100, atom_color=color_map, radius_multi
     n_atoms = mol.GetNumAtoms()
     # get the maximum position from the atom (positive or negative)
     all_positions = [max(abs(x)) for x in conf.GetPositions()]
-    max_pos = max(abs(all_positions)) * pos_multi
+    max_pos = max(all_positions) * pos_multi
     # to the max position we have to add width of the atom icons (*2 for the diameter)
     max_tot_pos = max_pos + atom_radius * max(radius_multi.values()) * 2
     # multiply for 2 because the max position is considered from the center of the image
