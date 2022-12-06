@@ -55,7 +55,7 @@ if __name__ == "__main__":
     Generate icons of molecules from SMILES, Name, Cas-number, Inchi or InChIKey.
     ''')
     st.markdown('''
-       For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git). The webapp is often under construction/improvements. If the web-app is slow, switch to smile input!  
+       For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git). The webapp is often under construction/improvements. If the web-app is slow, switch to SMILES input!  
        [DOI](https://doi.org/10.5281/zenodo.7388429): 10.5281/ZENODO.7388429.
        ''')
 
