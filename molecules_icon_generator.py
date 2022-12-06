@@ -392,9 +392,9 @@ def build_svg(mol, fullname, atom_radius=100, atom_color=color_map, radius_multi
         idx2 = bond.GetEndAtomIdx()
         pos2 = conf.GetAtomPosition(idx2)
         x1 = pos1.x * pos_multi + dimension // 2
-        y1 = - (pos1.y * pos_multi + dimension // 2)  # the y-axis is inverted in an image
+        y1 = -pos1.y * pos_multi + dimension // 2  # the y-axis is inverted in an image
         x2 = pos2.x * pos_multi + dimension // 2
-        y2 = - (pos2.y * pos_multi + dimension // 2)  # the y-axis is inverted in an image
+        y2 = -pos2.y * pos_multi + dimension // 2  # the y-axis is inverted in an image
         b_type = bond.GetBondType()
         if verbose:
             print(f"{b_type}\t{idx1}\t{idx2}")
@@ -429,7 +429,7 @@ def build_svg(mol, fullname, atom_radius=100, atom_color=color_map, radius_multi
         # add dimension to center with respect to the center of the blank image
         pos = conf.GetAtomPosition(i)
         atom_x = pos.x * pos_multi + dimension // 2
-        atom_y = - (pos.y * pos_multi + dimension // 2)  # the y-axis is inverted in an image
+        atom_y = -pos.y * pos_multi + dimension // 2  # the y-axis is inverted in an image
         if symbol not in atom_color:
             symbol = 'other'
         if verbose:
