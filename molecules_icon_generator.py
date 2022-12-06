@@ -302,8 +302,6 @@ def parse_structure(SMILES, position_multiplier, verbose=False, remove_H=True, n
 
     Parameters
     ----------
-    mol : mol object
-        A molecule object from the rdkit library.
     position_multiplier : int, default: 160
         This is the distance between atoms.
     verbose : bool, optional
@@ -347,10 +345,13 @@ def parse_structure(SMILES, position_multiplier, verbose=False, remove_H=True, n
     return mol, atom_map, atom_type_map, atom_bond_map
 
 
-def build_svg(mol, fullname, atom_map, atom_type_map, atom_bond_map, atom_radius=100, atom_color=color_map,
-              radius_multi=atom_resize, thickness=1 / 4, shadow_light=0.35, shadow=False, single_bonds=False):
+def build_svg(mol, fullname, atom_radius=100, atom_color=color_map,
+              radius_multi=atom_resize, thickness=1 / 4, shadow_light=0.35, shadow=False, single_bonds=False,
+              conformation=0, pos_multi=160):
+    conf = mol.GetConformer(conformation)
+    n_atoms = mol.GetNumAtoms()
     # get the maximum position from the atom (positive or negative)
-    max_pos = max([abs(pos) for pos in list(itertools.chain(*list(atom_map.values())))])
+    max_pos = max(abs(conf.GetPositions()[0]))
     # to the max position we have to add width of the atom icons (*2 for the diameter)
     max_tot_pos = max_pos + atom_radius * max(radius_multi.values()) * 2
     # multiply for 2 because the max position is considered from the center of the image
@@ -359,46 +360,51 @@ def build_svg(mol, fullname, atom_map, atom_type_map, atom_bond_map, atom_radius
     svg = svgwrite.Drawing(fullname, (str(dimension), str(dimension)))
 
     # add bond
-    bonds_list = list(itertools.combinations(list(atom_map.keys()), 2))  # generate a list of bonds couple
+    bonds_list = list(itertools.combinations(n_atoms, 2))  # generate a list of bonds couple
     aromatic_index = set()
     bond_thickness = int(atom_radius * thickness)
-    for couple in bonds_list:
-        atom1 = couple[0]
-        atom2 = couple[1]
-        BOND = mol.GetBondBetweenAtoms(atom1, atom2)
-        if BOND:
-            x1 = atom_map[atom1][0] + dimension // 2
-            y1 = atom_map[atom1][1] + dimension // 2
-            x2 = atom_map[atom2][0] + dimension // 2
-            y2 = atom_map[atom2][1] + dimension // 2
-            b_type = BOND.GetBondType()
-            bond_type = 1
-            if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
+    for bond in mol.GetBonds():
+        atom1 = bond.GetBeginAtom()
+        idx1 = bond.GetBeginAtomIdx()
+        pos1 = conf.GetAtomPosition(idx1)
+        atom2 = bond.GetBeginAtom()
+        idx2 = bond.GetBeginAtomIdx()
+        pos2 = conf.GetAtomPosition(idx2)
+        x1 = pos1.x * pos_multi + dimension // 2
+        y1 = pos1.y * pos_multi  + dimension // 2
+        x2 = pos2.x * pos_multi + dimension // 2
+        y2 = pos2.y * pos_multi + dimension // 2
+        b_type = bond.GetBondType()
+        bond_type = 1
+        if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
+            bond_type = 2
+        elif rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
+            symbol1 = atom1.GetSymbol()
+            symbol2 = atom2.GetSymbol()
+            critical = ('O', 'S')
+            conditions = [atom1 not in aromatic_index, atom2 not in aromatic_index,
+                          symbol1 not in critical, symbol2 not in critical,
+                          symbol1 != 'N' or atom1.getTotalDegree() < 3,
+                          symbol2 != 'N' or atom2.getTotalDegree() < 3]
+            if all(conditions):
                 bond_type = 2
-            elif rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
-                conditions = [atom1 not in aromatic_index, atom2 not in aromatic_index,
-                              atom_type_map[atom1] != 'O', atom_type_map[atom2] != 'O',
-                              atom_type_map[atom1] != 'S', atom_type_map[atom2] != 'S',
-                              atom_type_map[atom1] != 'N' or atom_bond_map[atom1] < 3,
-                              atom_type_map[atom2] != 'N' or atom_bond_map[atom2] < 3]
-                if all(conditions):
-                    bond_type = 2
-                    aromatic_index.add(atom1)
-                    aromatic_index.add(atom2)
-            elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
-                bond_type = 3
                 aromatic_index.add(atom1)
                 aromatic_index.add(atom2)
-            add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor=atom_color['Bond'],
-                         shadow_light=shadow_light)
+        elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
+            bond_type = 3
+            aromatic_index.add(atom1)
+            aromatic_index.add(atom2)
+        add_bond_svg(svg, bond_type, x1, y1, x2, y2, bond_thickness, bondcolor=atom_color['Bond'],
+                     shadow_light=shadow_light)
 
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
-    for i in reversed(range(len(mol.GetAtoms()))):
-        atom = mol.GetAtoms()[i]
+    for i in range(0, n_atoms, -1):
+        atom = mol.GetAtomWithIdx(i)
         atom = atom.GetSymbol()
         # add dimension to center with respect to the center of the blank image
-        atom_x = atom_map[i][0] + dimension // 2
-        atom_y = atom_map[i][1] + dimension // 2
+        pos = conf.GetAtomPosition(i)
+        atom_x = pos.x * pos_multi + dimension // 2
+        atom_y = pos.y * pos_multi + dimension // 2
         if atom not in atom_color:
             atom = 'other'
         corrected_radius = atom_radius * radius_multi[atom]  # resize the atom dimension
