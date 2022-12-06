@@ -55,7 +55,7 @@ if __name__ == "__main__":
     Generate icons of molecules from SMILES, Name, Cas-number, Inchi or InChIKey.
     ''')
     st.markdown('''
-       For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git).    
+       For more options and information, check out the [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git). The webapp is often under construction/improvements.   
        [DOI](https://doi.org/10.5281/zenodo.7388429): 10.5281/ZENODO.7388429.
        ''')
 
@@ -67,19 +67,47 @@ if __name__ == "__main__":
                 'cas_number': '103-90-2',
                 'stdinchi': 'InChI=1S/C8H9NO2/c1-6(10)9-7-2-4-8(11)5-3-7/h2-5,11H,1H3,(H,9,10)',
                 'stdinchikey': 'RZVAJINKPMORJF-UHFFFAOYSA-N'}
-
     input_string = st.text_input(input_type + ' :', def_dict[input_type])
 
     col1, col2, col3 = st.columns(3, gap='medium')
     with col1:
         single_bonds = st.checkbox('Single bonds')
         remove_H = st.checkbox('Remove Hydrogen')
+        conf = not st.checkbox('Switch conformation', value=False)
     with col2:
         h_shadow = st.checkbox('Hide shadows')
         black = st.checkbox('Black Icon')
     with col3:
         rdkit_draw = st.checkbox('Show RDKIT')
         bw = st.checkbox('Black and white')
+
+    # catch error when using the cirpy library
+    try:
+        if input_type == 'name':
+            input_string = cirpy.resolve(input_string, 'smiles')
+        mol = Molecule(input_string)
+        smiles = mol.smiles
+    except Exception as e:
+        st.write(f'''
+        The cirpy python library is not able to resolve your input {input_type}.
+        You can use SMILES to skip the cirpy library.
+        ''')
+        if input_type != 'smiles':
+            st.stop()
+
+    if input_type == 'smiles':  # if the input is a smile, use it directly ignoring the cirpy smiles
+        smiles = input_string
+
+    # try to build the mol structure
+    try:
+        molecule = mig.parse_structure(smiles, remove_H=remove_H, nice_conformation=conf)
+    except Exception as e:
+        st.error(f'''
+            Rdkit failed in building the structure of the molecule. Full error:
+            {e}''')
+        if input_type != 'smiles':
+            st.write(f'Try to use the SMILES instead of {input_type} as input')
+        st.stop()
 
     forms = [False, False, False, False]
     img_format = st.selectbox(
@@ -128,60 +156,37 @@ if __name__ == "__main__":
             st.session_state['reset_size'] = True
     icon_size = resize['All atoms'] * 100
 
-    # catch error when using the cirpy library
+    # change multiplier, thickness and shadow darkness
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        pos_multi = st.slider('Image size multiplier', 0, 900, 300,
+                              help='''Multiply the position of the atoms with respect to the 2D structure.
+                              A higher multiplier leads to higher resolution.''')
+    with col2:
+        thickness = st.slider('Thickness', 0.0, 0.6, 0.2,
+                              help='''Bond and stroke thicknesses over the atom radius.''')
+    with col3:
+        shadow_light = st.slider('Shadow/outline light', 0.0, 1.0, 1 / 3,
+                                 help='''Regulate the brightness of the shadow''')
+
+    if conf:
+        img_multi = pos_multi
+    else:
+        img_multi = pos_multi * 2 / 3
+
+    # try to produce the image
     try:
-        if input_type == 'name':
-            input_string = cirpy.resolve(input_string, 'smiles')
-        mol = Molecule(input_string)
-        iupac = mol.iupac_name
-        if not iupac:
-            iupac = 'not found'
-        smiles = mol.smiles
-    except Exception as e:
-        st.write(f'''
-        The cirpy python library is not able to resolve your input {input_type}.
-        You can use SMILES to skip the cirpy library.
-        ''')
-        if input_type != 'smiles':
-            st.stop()
-
-    if input_type == 'smiles':  # if the input is a smile, use it directly ignoring the cirpy smiles
-        smiles = input_string
-
-    try:
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            pos_multi = st.slider('Image size multiplier', 0, 900, 300,
-                                  help='''Multiply the position of the atoms with respect to the 2D structure.
-                                  A higher multiplier leads to higher resolution.''')
-        with col2:
-            thickness = st.slider('Thickness', 0.0, 0.6, 0.2,
-                                  help='''Bond and stroke thicknesses over the atom radius.''')
-        with col3:
-            shadow_light = st.slider('Shadow/outline light', 0.0, 1.0, 1 / 3,
-                                     help='''Regulate the brightness of the shadow''')
-
-        conf = not st.checkbox('Switch conformation', value=False)
-        if conf:
-            img_multi = pos_multi
-        else:
-            img_multi = pos_multi * 2 / 3
-        mol, at_map, type_map, bond_map = mig.parse_structure(smiles, position_multiplier=img_multi,
-                                                              remove_H=remove_H)
-        mig.icon_print(mol, at_map, type_map, bond_map, name='molecular-icon', rdkit_svg=rdkit_draw,
+        mig.icon_print(molecule, name='molecular-icon', rdkit_svg=rdkit_draw, pos_multi=img_multi,
                        single_bonds=single_bonds, atom_radius=icon_size, bw=bw, radius_multi=resize,
                        atom_color=new_color, shadow=not h_shadow, black=black,
                        save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
-                       thickness=thickness, shadow_light=shadow_light, nice_conformation=conf)
-
+                       thickness=thickness, shadow_light=shadow_light)
     except Exception as e:
         st.error(f'''
-            Rdkit failed in building the structure of the molecule or the Image is too big. Full error:
+            The program failed at producing the Image (probably it is too big). Full error:
             {e}''')
         if img_format != 'svg':
             st.write(f'Try to use the svg format')
-        if input_type != 'smiles':
-            st.write(f'Try to use the SMILES instead of {input_type} as input')
         st.stop()
 
     filename = 'molecular-icon.' + img_format
