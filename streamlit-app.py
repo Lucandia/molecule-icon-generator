@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     # catch error when using the cirpy library
     try:
-        if input_type == 'smiles': # if the input is a smile, use it directly ignoring the cirpy smiles
+        if input_type == 'smiles':  # if the input is a smile, use it directly ignoring the cirpy smiles
             smiles = input_string
         else:
             if input_type == 'name':
@@ -95,6 +95,7 @@ if __name__ == "__main__":
         The cirpy python library is not able to resolve your input {input_type}.
         You can use SMILES to skip the cirpy library.
         ''')
+        st.stop()
 
     # try to build the mol structure
     try:
