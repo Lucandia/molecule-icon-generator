@@ -397,36 +397,36 @@ For more options and information, check out the
     else:
         direct = os.getcwd()
     for index, mol in enumerate(molecules):
-        # try:
-        if dimension == '3D interactive':
-            graph = mig.graph_3d(mol, name=str(index), rdkit_svg=rdkit_draw, radius_multi=resize, directory=direct,
-                                 atom_color=new_color, pos_multi=img_multi, atom_radius=icon_size,
-                                 thickness=thickness, resolution=resolution)
-            filename = direct + os.sep + str(index) + ".html"
-            # set camera to download the image format selected
-            config = {'toImageButtonOptions': {
-                'label': f'Download {img_format}',
-                'format': img_format,  # one of png, svg, jpeg, webp
-                'filename': 'molecule-icon',
-                'scale': 1  # Multiply title/legend/axis/canvas sizes by this factor
-            }
-            }
-            graph.write_html(filename, config=config)
-        else:
-            mig.icon_print(mol, name=str(index), rdkit_svg=rdkit_draw, pos_multi=img_multi, directory=direct,
-                           single_bonds=single_bonds, atom_radius=icon_size, radius_multi=resize,
-                           atom_color=new_color, shadow=not h_shadow,
-                           save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
-                           thickness=thickness, shadow_light=shadow_light, rotation=rot_angles, emoji=emoji)
-        # except Exception as e:
-        #     st.error(f'''
-        #         The program failed at producing the Image/Graph for {Chem.MolToSmiles(mol)}. Full error:
-        #         {e}''')
-        #     if dimension != '3D interactive':
-        #         if img_format != 'svg':
-        #             st.write(f'Try to use the svg format')
-        #     if not smiles_list:
-        #         st.stop()
+        try:
+            if dimension == '3D interactive':
+                graph = mig.graph_3d(mol, name=str(index), rdkit_svg=rdkit_draw, radius_multi=resize, directory=direct,
+                                     atom_color=new_color, pos_multi=img_multi, atom_radius=icon_size,
+                                     thickness=thickness, resolution=resolution)
+                filename = direct + os.sep + str(index) + ".html"
+                # set camera to download the image format selected
+                config = {'toImageButtonOptions': {
+                    'label': f'Download {img_format}',
+                    'format': img_format,  # one of png, svg, jpeg, webp
+                    'filename': 'molecule-icon',
+                    'scale': 1  # Multiply title/legend/axis/canvas sizes by this factor
+                }
+                }
+                graph.write_html(filename, config=config)
+            else:
+                mig.icon_print(mol, name=str(index), rdkit_svg=rdkit_draw, pos_multi=img_multi, directory=direct,
+                               single_bonds=single_bonds, atom_radius=icon_size, radius_multi=resize,
+                               atom_color=new_color, shadow=not h_shadow,
+                               save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
+                               thickness=thickness, shadow_light=shadow_light, rotation=rot_angles, emoji=emoji)
+        except Exception as e:
+            st.error(f'''
+                The program failed at producing the Image/Graph for {Chem.MolToSmiles(mol)}. Full error:
+                {e}''')
+            if dimension != '3D interactive':
+                if img_format != 'svg':
+                    st.write(f'Try to use the svg format')
+            if not smiles_list:
+                st.stop()
 
     # show the download button for single molecule
     if not smiles_list:
