@@ -11,4 +11,3 @@ pdf2image
 streamlit
 kaleido
 requests
-xml
