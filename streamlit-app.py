@@ -18,6 +18,9 @@ import shutil
 
 warnings.filterwarnings("ignore")  # brute force approach to avoid decompression bomb warning by pdf2image and PIL
 
+emoji_license = """The emoji are published under the Creative Commons Share Alike 
+                    License 4.0 (CC BY-SA 4.0). Icons containing emojis are distributed under the
+                    CC BY-SA 4.0 license (https://creativecommons.org/licenses/by-sa/4.0/#)"""
 
 def render_svg(svg):
     """Renders the given svg string."""
@@ -174,17 +177,17 @@ For more options and information, check out the
                 with col3:
                     st.write('\n')
                     st.write('\n')
-                    activate_emoji = st.checkbox('Use emoji')
+                    activate_emoji = st.checkbox('Use emoji', help=emoji_license)
         else:
             with col1:
                 conf = not st.checkbox('Switch conformation', key='switch_conf', value=False)
             with col3:
                 if dimension == '2D':
-                    activate_emoji = st.checkbox('Use emoji')
+                    activate_emoji = st.checkbox('Use emoji', help=emoji_license)
     else:
         col1, col2, col3 = st.columns(3, gap='medium')
         with col3:
-            activate_emoji = st.checkbox('Use emoji')
+            activate_emoji = st.checkbox('Use emoji', help=emoji_license)
 
     # add common checkbox
     col1, col2, col3, col4 = st.columns(4)
