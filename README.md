@@ -1,4 +1,4 @@
-# Molecular-icons Generator!
+# Molecule icon Generator!
 <img src="example/paracetamol.jpeg" width=300 height=300>
 Generate nice icons of molecules from SMILES.
 
