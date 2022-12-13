@@ -9,7 +9,6 @@ svglib
 reportlab
 pdf2image
 streamlit
-shutil
+kaleido
 requests
-io
 xml
