@@ -1,7 +1,6 @@
 rdkit
 scipy
 plotly
-kaleido
 opencv-python-headless
 argparse
 numpy
@@ -14,4 +13,3 @@ shutil
 requests
 io
 xml
-
