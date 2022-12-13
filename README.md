@@ -40,20 +40,21 @@ pip install -r requirements.txt
 - Run the code from the command line:
 
  ```
-  python molecules_icon_generator.py "CC(=O)Nc1ccc(cc1)O" --name paracetamol --rdkit_svg
+  python molecule_icon_generator.py "CC(=O)Nc1ccc(cc1)O" --name paracetamol --rdkit_svg
  ```
 
 - Or from the python interpreter:
 
  ```
- from molecules_icon_generator import icon_print 
- icon_print("CC(=O)Nc1ccc(cc1)O", name = 'paracetamol', rdkit_svg = True, single_bonds = False, remove_H = False, verbose=False)
+ import molecule_icon_generator as mig 
+ molecule = mig.parse_structure("CC(=O)Nc1ccc(cc1)O", remove_H=False)
+ mig.icon_print(molecule, name = 'paracetamol', rdkit_svg = True, single_bonds = False, remove_H = False, verbose=False)
  ```
 
 - Or use the Streamlit functionalities! From the terminal run:
 
  ```
-python -m streamlit run streamlit-app.py
+python -m streamlit run streamlit_app.py
  ```
  
 ## Donate
