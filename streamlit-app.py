@@ -16,7 +16,11 @@ import json
 import os
 import shutil
 
-warnings.filterwarnings("ignore")  # brute force approach to avoid decompression bomb warning by pdf2image and PIL
+# brute force approach to avoid decompression bomb warning by pdf2image and PIL
+from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
+warnings.filterwarnings("ignore")
+warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 
 emoji_license = """The emoji are published under the Creative Commons Share Alike 
                     License 4.0 (CC BY-SA 4.0). Icons containing emojis are distributed under the
@@ -47,10 +51,12 @@ if __name__ == "__main__":
         st.session_state['reset_size'] = False
     if 'last_atom_size' not in st.session_state:
         st.session_state['last_atom_size'] = None
+    if 'last_atom_color' not in st.session_state:
+        st.session_state['last_atom_color'] = None
     if 'upload_setting' not in st.session_state:
         st.session_state['upload_setting'] = False
-    if 'emoji_but' not in st.session_state:  # add 'but' to the name to avoid saving it to the settings
-        st.session_state['emoji_but'] = dict()
+    if 'emoji_dict' not in st.session_state:
+        st.session_state['emoji_dict'] = dict()
     # if 'sizes_percentage' not in st.session_state:
     #     st.session_state['sizes_percentage'] = 1
 
@@ -62,12 +68,15 @@ if __name__ == "__main__":
     if 'atom_color_select' in st.session_state and 'color_picker' in st.session_state and st.session_state[
         'reset_color']:
         st.session_state.color_picker = new_color[st.session_state.atom_color_select]
+        st.session_state['last_atom_color'] = None
         st.session_state['reset_color'] = False
+    last_atom_color = st.session_state['last_atom_color']
     if 'atom_size_select' in st.session_state and 'sizes_percentage' in st.session_state and st.session_state[
         'reset_size']:
         st.session_state['last_atom_size'] = None
         st.session_state['reset_size'] = False
     last_atom_size = st.session_state['last_atom_size']
+
 
     # setting header, description and citation
     st.set_page_config(page_title="Molecule icons")
@@ -150,7 +159,9 @@ For more options and information, check out the
         else:
             formats = ('svg', 'png', 'jpeg', 'pdf')
         forms = [False, False, False, False]
-        img_format = st.selectbox('Download file format:', formats, key='img_format')
+        img_format = st.selectbox('Download file format:', formats, key='img_format',
+                                  help="""The native file format is svg. Using png and jpeg formats could slow down 
+                                       the app""")
         if dimension != '3D interactive':
             for ind, img_form in enumerate(('svg', 'png', 'jpeg', 'pdf')):
                 if img_form == img_format:
@@ -177,17 +188,17 @@ For more options and information, check out the
                 with col3:
                     st.write('\n')
                     st.write('\n')
-                    activate_emoji = st.checkbox('Use emoji', help=emoji_license)
+                    activate_emoji = st.checkbox('Use emoji', key='use_emoji', help=emoji_license)
         else:
             with col1:
                 conf = not st.checkbox('Switch conformation', key='switch_conf', value=False)
             with col3:
                 if dimension == '2D':
-                    activate_emoji = st.checkbox('Use emoji', help=emoji_license)
+                    activate_emoji = st.checkbox('Use emoji', key='use_emoji', help=emoji_license)
     else:
         col1, col2, col3 = st.columns(3, gap='medium')
         with col3:
-            activate_emoji = st.checkbox('Use emoji', help=emoji_license)
+            activate_emoji = st.checkbox('Use emoji', key='use_emoji', help=emoji_license)
 
     # add common checkbox
     col1, col2, col3, col4 = st.columns(4)
@@ -268,13 +279,15 @@ For more options and information, check out the
 
     # add emojis
     if activate_emoji:
-        emoji = st.session_state['emoji_but']
-        col1, col2 = st.columns(2, gap='medium')
+        emoji = st.session_state['emoji_dict']
+        col1, col2, col3 = st.columns(3, gap='medium')
         with col1:
+            st.write('\n')
             atom_emoji = st.selectbox(
                 'Select atom index or element:',
                 list(range(molecules[0].GetNumAtoms())) + list(mig.atom_resize.keys()),
-                help="""The atom index depends on rdkit parsing. You can see the atom indexes using 'Show RDKIT'""")
+                help="""The atom index depends on rdkit parsing. You can see the atom indexes using 'Show RDKIT index'.
+                     To reset all the emojis, choose 'All atoms' without indicating the unicode""")
         with col2:
             if atom_emoji in emoji:
                 def_value = emoji[atom_emoji][0]
@@ -283,16 +296,23 @@ For more options and information, check out the
             emoji_code = st.text_input(f'Emoji unicode from https://openmoji.org/:', value=def_value,
                                        help='''Insert unicode character according to the open-emoji project
                                                 https://openmoji.org/''')
-        # with col3:
-        #     st.write('\n')
-        #     st.write('\n')
-        #     color = st.checkbox('Colored emoji', value=True)
         if atom_emoji == 'All atoms':
             for key in mig.atom_resize:
                 emoji[key] = [emoji_code, 1]  # set coloured because black emoji have transparency.
         else:
             emoji[atom_emoji] = [emoji_code, 1]  # set coloured because black emoji have transparency.
-
+        with col3:
+            st.write('\n')
+            st.write('\n')
+            st.write('\n')
+            periodic_emoji = st.button('Emoji periodic table', key='periodic_emoji_but',
+                                       help=""""In the emoji periodic table, the atoms are replaced by emojis which
+                                        represent the element. It was created by Nicola Ga-stan and Andrew White.
+                                        To reset all the emojis, select 'All atoms' in the selection window without
+                                        unicode""")
+            if periodic_emoji:
+                emoji = {k: [v, 1] for k, v in mig.emoji_periodic_table.items()}
+                st.session_state['emoji_dict'] = emoji
     else:
         emoji = None
 
@@ -303,7 +323,14 @@ For more options and information, check out the
             'Change the color:',
             sorted(list(mig.color_map.keys())), key='atom_color_select')
     with col2:
-        new_color[atom_color] = st.color_picker(f' Pick {atom_color} color', new_color[atom_color],
+        if last_atom_color != atom_color:
+            def_value = new_color[atom_color]
+        else:
+            if 'sizes_percentage' in st.session_state:
+                def_value = st.session_state.color_picker
+            else:
+                def_value = new_color[atom_color]
+        new_color[atom_color] = st.color_picker(f' Pick {atom_color} color', def_value,
                                                 key="color_picker")
         if atom_color == "All icon":  # set all icon same color
             unicolor = new_color[atom_color]
@@ -316,6 +343,7 @@ For more options and information, check out the
                 if key == 'Bond':
                     continue
                 new_color[key] = unicolor
+    st.session_state['last_atom_color'] = atom_color
     with col3:
         st.write('\n')
         st.write('\n')
@@ -323,6 +351,7 @@ For more options and information, check out the
             st.session_state['color_dict'] = mig.color_map.copy()
             new_color = st.session_state['color_dict']
             st.session_state['reset_color'] = True
+            st.experimental_rerun()
 
     # change the size of the icon (single atoms, all atoms or bonds)
     col1, col2, col3 = st.columns(3, gap='medium')
@@ -349,6 +378,7 @@ For more options and information, check out the
             st.session_state['resize_dict'] = mig.atom_resize.copy()
             resize = st.session_state['resize_dict']
             st.session_state['reset_size'] = True
+            st.experimental_rerun()
     icon_size = resize['All atoms'] * 100
 
     # change multiplier, thickness and shadow darkness

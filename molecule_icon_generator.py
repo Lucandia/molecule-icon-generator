@@ -12,7 +12,6 @@ from pdf2image import convert_from_path  # require poppler
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from rdkit.Chem import Draw
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import rdCoordGen
 from rdkit.Chem import rdDepictor
@@ -28,7 +27,12 @@ import requests
 from io import BytesIO
 import xml.etree.ElementTree as ET
 
-warnings.filterwarnings("ignore")  # brute force approach to avoid decompression bomb warning by pdf2image and PIL
+# brute force approach to avoid decompression bomb warning by pdf2image and PIL
+from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
+warnings.filterwarnings("ignore")
+warnings.simplefilter('ignore', Image.DecompressionBombWarning)
+
 
 # dictionary containing the default colour for each atom, according to CPK colour convention
 color_map = {"H": "#FFFFFF", "D": "#FFFFC0", "T": "#FFFFA0", "He": "#D9FFFF", "Li": "#CC80FF", "Be": "#C2FF00",
@@ -66,6 +70,33 @@ atom_resize = {'All atoms': 1.0, 'H': 1.0, 'D': 1.0, 'T': 1.0, 'He': 1.0, 'Li': 
                'At': 1.0, 'Rn': 1.0, 'Fr': 1.0, 'Ra': 1.0, 'Ac': 1.0, 'Th': 1.0, 'Pa': 1.0, 'U': 1.0, 'Np': 1.0,
                'Pu': 1.0, 'Am': 1.0, 'Cm': 1.0, 'Bk': 1.0, 'Cf': 1.0, 'Es': 1.0, 'Fm': 1.0, 'Md': 1.0, 'No': 1.0,
                'Lr': 1.0, 'Rf': 1.0, 'Db': 1.0, 'Sg': 1.0, 'Bh': 1.0, 'Hs': 1.0, 'Mt': 1.0, 'other': 1.0}
+
+# period table of emoji from the emoji-chem repository (https://github.com/whitead/emoji-chem), thanks to Andrew White
+emoji_periodic_table = {'H': '2B50', 'He': '1F388', 'Li': '1F50B', 'Be': '1F6F0', 'B': '1F939-200D-2640-FE0F',
+                        'C': '26FD', 'N': '1FAB4', 'O': '1F525', 'F': '1FAA5', 'Ne': '1F383', 'Na': '1F35F',
+                        'Mg': '1F4A5', 'Al': '2708', 'Si': '1F5A5', 'P': '1F30B', 'S': '1F637', 'Cl': '1F922',
+                        'Ar': '1F47B', 'K': '1F34C', 'Ca': '1F95B', 'Sc': '1F6B2', 'Ti': '1F6F3', 'V': '1F3A8',
+                        'Cr': '1F36D', 'Mn': '1F356', 'Fe': '1F953', 'Co': '1F4FC', 'Ni': '1F374', 'Cu': '1F949',
+                        'Zn': '1F5DD', 'Ga': '1F944', 'Ge': '1F37A', 'As': '1F480', 'Se': '1F485',
+                        'Br': '1F95C', 'Kr': '1F52B', 'Rb': '1F6A8', 'Sr': '1F387', 'Y': '1F4FA', 'Zr': '1F680',
+                        'Nb': '1F3AD', 'Mo': '26D3', 'Tc': '2699', 'Ru': '1F984', 'Rh': '1F6E3', 'Pd': '2697',
+                        'Ag': '1F948', 'Cd': '1F3ED', 'In': '1F4F1', 'Sn': '1F916', 'Sb': '1F441', 'Te': '1F30C',
+                        'I': '1F41F', 'Xe': '1F52E', 'Cs': '23F1', 'Ba': '1F48A', 'La': '269C', 'Ce': '1F69B',
+                        'Pr': '1F465', 'Nd': '1F377', 'Pm': '1F6AC', 'Sm': '1F489', 'Eu': '1F1EA', 'Gd': '1F3B0',
+                        'Tb': '1F433', 'Dy': '1F484', 'Ho': '1F306', 'Er': '1F62C', 'Tm': '1F352', 'Yb': '1F315',
+                        'Lu': '1F90D', 'Hf': '1F4F8', 'Ta': '1F50D', 'W': '1F48E', 'Re': '1F4BB', 'Os': '1F58B',
+                        'Ir': '2604', 'Pt': '1F4B0', 'Au': '1F947', 'Hg': '1F321', 'Tl': '1F400', 'Pb': '1F6B0',
+                        'Bi': '1F308', 'Po': '1F985', 'At': '26A1', 'Rn': '1F32A', 'Fr': '1F950',
+                        'Ra': '231A', 'Ac': '1F300', 'Th': '26C8', 'Pa': '1F469-200D-1F680', 'U': '2622',
+                        'Np': '1F531', 'Pu': '1F4A3', 'Am': '1F30E', 'Cm': '1F469-200D-1F52C', 'Bk': '1F393',
+                        'Cf': '1F31E', 'Es': '1F43C', 'Fm': '1F4AF', 'Md': '1F647', 'No': '1F3C5', 'Lr': '1F501',
+                        'Rf': '1F5FA', 'Db': '1F914', 'Sg': '1F30A', 'Bh': '269B', 'Hs': '2696', 'Mt': '1F483',
+                        'Ds': '1F3F0', 'Rg': '1FA7B', 'Cn': '1F4AB', 'Nh': '1F5FE', 'Fl': '1F4DD', 'Mc': '1F3C7',
+                        'Lv': '1F4A1', 'Ts': '1F345', 'Og': '1F95D'}
+
+# A dictionary with the unicode of the emoji as key and the svg text as value, to speed up the emoji addition.
+# This helps when the same emoji is used many times (for example when using the emoji periodic table).
+emoji_requested = {}
 
 
 def hex_to_rgb(color):
@@ -305,7 +336,8 @@ def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, sh
         start_shade = circ_post(-shadow_deg, radius, center)
         end_shade = circ_post(-shadow_deg + 180, radius, center)
         shad_elem = ET.Element('path')
-        shad_elem.set('d', f'M{start_shade[0]},{start_shade[1]} A{radius},{radius} 0, 1,1 {end_shade[0]},{end_shade[1]} M{end_shade[0]},{end_shade[1]} A{radius * shadow_curve},{radius * shadow_curve} 0, 0,0 {start_shade[0]}, {start_shade[1]} Z')
+        shad_elem.set('d',
+                      f'M{start_shade[0]},{start_shade[1]} A{radius},{radius} 0, 1,1 {end_shade[0]},{end_shade[1]} M{end_shade[0]},{end_shade[1]} A{radius * shadow_curve},{radius * shadow_curve} 0, 0,0 {start_shade[0]}, {start_shade[1]} Z')
         shad_elem.set('fill', f'{shadow_color}')
         shad_elem.set('stroke-width', '0')
         src.append(shad_elem)
@@ -436,14 +468,18 @@ def add_emoji(src, xy, size, unicode, color=True):
 
     """
     unicode = unicode.strip()  # just to make sure
-    if color:
-        url = f"https://raw.github.com/hfg-gmuend/openmoji/master/color/svg/{unicode}.svg"
+    if unicode in emoji_requested:
+        emoji_text = emoji_requested[unicode]
     else:
-        url = f"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/black/svg/{unicode}.svg"
-    response = requests.get(url)
-    emoji_text = BytesIO(response.content).read().decode('utf-8')
-    if emoji_text == '404: Not Found':
-        raise ValueError(f'Emoji unicode ({unicode}) not found')
+        if color:
+            url = f"https://raw.github.com/hfg-gmuend/openmoji/master/color/svg/{unicode}.svg"
+        else:
+            url = f"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/black/svg/{unicode}.svg"
+        response = requests.get(url)
+        emoji_text = BytesIO(response.content).read().decode('utf-8')
+        if emoji_text == '404: Not Found':
+            raise ValueError(f'Emoji unicode ({unicode}) not found')
+        emoji_requested[unicode] = emoji_text
     root = ET.fromstring(emoji_text)
     emoji_dim = [float(i) for i in root.get("viewBox").split()]
     del root.attrib["viewBox"]
@@ -565,7 +601,7 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
     # setting svg attributes
     svg = ET.Element('svg')
     svg.set('id', "molecule_icon")
-    svg.set('viewBox', f"{-dim} {-dim} {dim*2} {dim*2}")
+    svg.set('viewBox', f"{-dim} {-dim} {dim * 2} {dim * 2}")
     svg.set('xmlns', "http://www.w3.org/2000/svg")
     aromatic_index = set()
     bond_done = set()
