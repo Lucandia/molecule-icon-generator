@@ -453,7 +453,7 @@ For more options and information, check out the
                                thickness=thickness, shadow_light=shadow_light, rotation=rot_angles, emoji=emoji)
         except Exception as e:
             st.error(f'''
-                The program failed at producing the Image/Graph for {Chem.MolToSmiles(mol)}. Full error:
+                The program failed at producing the Image/Graph. Full error:
                 {e}''')
             if dimension != '3D interactive':
                 if img_format != 'svg':
