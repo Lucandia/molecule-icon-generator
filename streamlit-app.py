@@ -280,12 +280,12 @@ For more options and information, check out the
     # add emojis
     if activate_emoji:
         emoji = st.session_state['emoji_dict']
+        atom_and_index = list(range(molecules[0].GetNumAtoms())) + list(mig.atom_resize.keys())
         col1, col2, col3 = st.columns(3, gap='medium')
         with col1:
             st.write('\n')
             atom_emoji = st.selectbox(
-                'Select atom index or element:',
-                list(range(molecules[0].GetNumAtoms())) + list(mig.atom_resize.keys()),
+                'Select atom index or element:', atom_and_index,
                 help="""The atom index depends on rdkit parsing. You can see the atom indexes using 'Show RDKIT index'.
                      To reset all the emojis, choose 'All atoms' without indicating the unicode""")
         with col2:
@@ -297,7 +297,7 @@ For more options and information, check out the
                                        help='''Insert unicode character according to the open-emoji project
                                                 https://openmoji.org/''')
         if atom_emoji == 'All atoms':
-            for key in mig.atom_resize:
+            for key in atom_and_index:
                 emoji[key] = [emoji_code, 1]  # set coloured because black emoji have transparency.
         else:
             emoji[atom_emoji] = [emoji_code, 1]  # set coloured because black emoji have transparency.
