@@ -622,6 +622,7 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
     svg.set('viewBox', f"{-dim} {-dim} {dim * 2} {dim * 2}")
     svg.set('xmlns', "http://www.w3.org/2000/svg")
     aromatic_index = set()
+    double_index = set()
     bond_done = set()
     bond_thickness = int(atom_radius * thickness)
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
@@ -651,16 +652,11 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
             if verbose:
                 print(f"Bond\t{b_type}\t{idx1}\t{idx2}")
             bond_type = 1
-            if rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
-                bond_type = 2
-            elif rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
-                symbol1 = atom1.GetSymbol()
-                symbol2 = atom2.GetSymbol()
-                critical = ('O', 'S')
+            if rdkit.Chem.rdchem.BondType.AROMATIC == b_type and not single_bonds:
                 conditions = [idx1 not in aromatic_index, idx2 not in aromatic_index,
-                              symbol1 not in critical, symbol2 not in critical,
-                              symbol1 != 'N' or len(bond_map[idx1]) < 3,
-                              symbol2 != 'N' or len(bond_map[idx2]) < 3]
+                              idx1 not in double_index, idx2 not in double_index,  # avoid double bonds of aromatics
+                              len(bond_map[idx1]) < atom1.GetTotalValence(),
+                              len(bond_map[idx2]) < atom2.GetTotalValence()]
                 if all(conditions):
                     bond_type = 2
                     aromatic_index.add(idx1)
@@ -669,6 +665,10 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
                 bond_type = 3
                 aromatic_index.add(idx1)
                 aromatic_index.add(idx2)
+            elif rdkit.Chem.rdchem.BondType.DOUBLE == b_type and not single_bonds:
+                bond_type = 2
+                double_index.add(idx1)
+                double_index.add(idx2)
             add_bond_svg(svg, bond_type, pos_dict[idx1][0], -pos_dict[idx1][1], pos_dict[idx2][0], -pos_dict[idx2][1],
                          bond_thickness, bondcolor=atom_color['Bond'], shadow_light=shadow_light)
             bond_done.add(bond_idx)
