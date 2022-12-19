@@ -495,6 +495,7 @@ def add_emoji(src, xy, size, unicode, color=True):
 
 def partial_sanitize(mol):
     """This function takes a molecule, computes ring/valence and sanitize it partially.
+    Based on https://sourceforge.net/p/rdkit/mailman/message/32599798/
 
     Parameters
     ----------
@@ -656,18 +657,18 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
                 symbol1 = atom1.GetSymbol()
                 symbol2 = atom2.GetSymbol()
                 critical = ('O', 'S')
-                conditions = [atom1 not in aromatic_index, atom2 not in aromatic_index,
+                conditions = [idx1 not in aromatic_index, idx2 not in aromatic_index,
                               symbol1 not in critical, symbol2 not in critical,
                               symbol1 != 'N' or len(bond_map[idx1]) < 3,
                               symbol2 != 'N' or len(bond_map[idx2]) < 3]
                 if all(conditions):
                     bond_type = 2
-                    aromatic_index.add(atom1)
-                    aromatic_index.add(atom2)
+                    aromatic_index.add(idx1)
+                    aromatic_index.add(idx2)
             elif rdkit.Chem.rdchem.BondType.TRIPLE == b_type and not single_bonds:
                 bond_type = 3
-                aromatic_index.add(atom1)
-                aromatic_index.add(atom2)
+                aromatic_index.add(idx1)
+                aromatic_index.add(idx2)
             add_bond_svg(svg, bond_type, pos_dict[idx1][0], -pos_dict[idx1][1], pos_dict[idx2][0], -pos_dict[idx2][1],
                          bond_thickness, bondcolor=atom_color['Bond'], shadow_light=shadow_light)
             bond_done.add(bond_idx)
