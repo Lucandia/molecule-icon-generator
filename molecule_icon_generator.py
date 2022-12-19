@@ -493,6 +493,22 @@ def add_emoji(src, xy, size, unicode, color=True):
     src.append(emoji_elem)
 
 
+def partial_sanitize(mol):
+    """This function takes a molecule, computes ring/valence and sanitize it partially.
+
+    Parameters
+    ----------
+    mol : rdkit molecule object.
+        RDKIT object for a molecule
+
+    """
+    # Generates properties like implicit valence and ring information.
+    mol.UpdatePropertyCache(strict=False)
+    Chem.SanitizeMol(mol,
+                     Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_KEKULIZE | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
+                     catchErrors=True)
+
+
 def parse_structure(smiles, remove_H=True, nice_conformation=True, dimension_3=False, n_conf=1, force_field='UFF',
                     randomseed=-1):
     """This function takes a SMILES string and returns molecule object that hase been prepared.
@@ -520,7 +536,8 @@ def parse_structure(smiles, remove_H=True, nice_conformation=True, dimension_3=F
         A rdkit molecule object.
 
     """
-    mol = Chem.MolFromSmiles(smiles)  # read the molecule
+    mol = Chem.MolFromSmiles(smiles, sanitize=False)  # read the molecule
+    partial_sanitize(mol)  # partial sanitization
     mol = Chem.AddHs(mol)  # add Hydrogens
     # build with 3D structure
     if dimension_3:
@@ -766,7 +783,8 @@ def icon_print(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False
     if save_jpeg:
         pages[0].save(directory + os.sep + name + '.jpeg', 'JPEG')
 
-    print('\033[0;32m' + fullname + ' completed' + '\033[0;0;m')
+    if verbose:
+        print('\033[0;32m' + fullname + ' completed' + '\033[0;0;m')
     return svg
 
 

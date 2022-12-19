@@ -60,9 +60,30 @@ if __name__ == "__main__":
     # if 'sizes_percentage' not in st.session_state:
     #     st.session_state['sizes_percentage'] = 1
 
-    # loading the color and resize dictionary
-    new_color = st.session_state['color_dict']
-    resize = st.session_state['resize_dict']
+    loading_err = KeyError("""The app encountered a problem in initializing the data. 
+Try to reload the page. If the problem persists, contact monarluca@gmail.com""")
+    # loading the color, resize and emoji dictionary
+    if 'color_dict' in st.session_state:
+        new_color = st.session_state['color_dict']
+    else:
+        st.exception(loading_err)
+        print([i for i in st.session_state])
+        st.session_state['color_dict'] = mig.color_map.copy()
+        new_color = st.session_state['color_dict']
+    if 'resize_dict' in st.session_state:
+        resize = st.session_state['resize_dict']
+    else:
+        st.exception(loading_err)
+        print([i for i in st.session_state])
+        st.session_state['resize_dict'] = mig.atom_resize.copy()
+        resize = st.session_state['resize_dict']
+    if 'emoji_dict' in st.session_state:
+        emoji = st.session_state['emoji_dict']
+    else:
+        st.exception(loading_err)
+        print([i for i in st.session_state])
+        st.session_state['emoji_dict'] = dict()
+        emoji = st.session_state['emoji_dict']
 
     # check if the color/resize dictionary have been reset
     if 'atom_color_select' in st.session_state and 'color_picker' in st.session_state and st.session_state[
@@ -76,7 +97,6 @@ if __name__ == "__main__":
         st.session_state['last_atom_size'] = None
         st.session_state['reset_size'] = False
     last_atom_size = st.session_state['last_atom_size']
-
 
     # setting header, description and citation
     st.set_page_config(page_title="Molecule icons")
@@ -241,11 +261,12 @@ For more options and information, check out the
         molecules = list()
         if load_sdf and mol_file:
             if '.sdf' in mol_file.name:
-                molecule = Chem.MolFromMolBlock(mol_file.read())
+                molecule = Chem.MolFromMolBlock(mol_file.read(), sanitize=False)
             elif '.mol2' in mol_file.name:
-                molecule = Chem.MolFromMol2Block(mol_file.read())
+                molecule = Chem.MolFromMol2Block(mol_file.read(), sanitize=False)
             elif '.pdb' in mol_file.name:
-                molecule = Chem.MolFromPDBBlock(mol_file.read())
+                molecule = Chem.MolFromPDBBlock(mol_file.read(), sanitize=False)
+            mig.partial_sanitize(molecule)
             molecules.append(molecule)
             if remove_H:
                 molecule = Chem.RemoveHs(molecule)
@@ -270,16 +291,19 @@ For more options and information, check out the
                                            force_field=f_field, randomseed=rand_seed)
             molecules.append(molecule)
     except Exception as e:
-        st.error(f'''
+        error_txt = f'''
             Rdkit failed in building the structure of the molecule. Full error:
-            {e}''')
+            {e}.'''
         if input_type != 'smiles':
-            st.write(f'Try to use the SMILES instead of {input_type} as input')
+            error_txt += f' \n  Try to use the SMILES instead of {input_type} as input.'
+        elif input_type == 'smiles' and 'H' in smiles:
+            error_txt += '  \n  If you have written Hydrogen atoms in the SMILES, try to remove them.'
+        error_txt += '  \n  If the problem persists, contact monarluca@gmail.com'
+        st.error(error_txt)
         st.stop()
 
     # add emojis
     if activate_emoji:
-        emoji = st.session_state['emoji_dict']
         atom_and_index = list(range(molecules[0].GetNumAtoms())) + list(mig.atom_resize.keys())
         col1, col2, col3 = st.columns(3, gap='medium')
         with col1:
@@ -452,12 +476,14 @@ For more options and information, check out the
                                save_svg=forms[0], save_png=forms[1], save_jpeg=forms[2], save_pdf=forms[3],
                                thickness=thickness, shadow_light=shadow_light, rotation=rot_angles, emoji=emoji)
         except Exception as e:
-            st.error(f'''
+            error_txt = f'''
                 The program failed at producing the Image/Graph. Full error:
-                {e}''')
+                {e}.'''
             if dimension != '3D interactive':
                 if img_format != 'svg':
-                    st.write(f'Try to use the svg format')
+                    error_txt += '  \n  Try to use the svg format.'
+            error_txt += '  \n  If the problem persists, contact monarluca@gmail.com'
+            st.error(error_txt)
             if not smiles_list:
                 st.stop()
 
