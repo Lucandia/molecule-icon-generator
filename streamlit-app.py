@@ -15,6 +15,7 @@ import warnings
 import json
 import os
 import shutil
+import time
 
 # brute force approach to avoid decompression bomb warning by pdf2image and PIL
 from PIL import Image
@@ -113,13 +114,18 @@ For more options and information, check out the
 [DOI](https://doi.org/10.5281/zenodo.7388429): 10.5281/ZENODO.7388429.
        ''')
 
+    # check the time of the parsing
+    start_time = time.time()
     # select the input type
     input_type = st.selectbox("Create your icon by",
-                              ['smiles', 'name', 'load file', 'cas_number', 'stdinchi', 'stdinchikey', 'smiles list'],
+                              ['name', 'smiles', 'load file', 'cas_number', 'stdinchi', 'stdinchikey', 'smiles list'],
                               help='Choose the input info of your molecule. SMILES inputs are faster')
     if input_type != 'smiles' and input_type != 'smiles list' and input_type != 'load file':
-        st.write(f'''The SMILES of the molecule is parsed from the cirpy library.
-                     If the app is slow, switch to SMILES input.''')
+        # end of parsing time
+        end_time = time.time()
+        if end_time - start_time > 1.5:
+            # The SMILES of the molecule is parsed from the cirpy library.
+            st.warning('If the app is slow, use SMILES input.', icon="⚠️")
     # default input for each input_type except 'load file'
     def_dict = {'name': 'paracetamol',
                 'smiles': "CC(=O)Nc1ccc(cc1)O",
