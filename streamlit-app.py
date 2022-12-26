@@ -108,6 +108,7 @@ Try to reload the page. If the problem persists, contact monarluca@gmail.com""")
     Generate icons of molecules from SMILES, Name, Cas-number, Inchi, InChIKey, load your molecule file or convert a
     list of SMILES.
     ''')
+    st.warning('A new release is about to be published. If you have saved settings, they could not be compatible with the new release.', icon="⚠️")
     st.markdown('''
 For more options and information, check out the 
 [GitHub repository](https://github.com/lmonari5/molecule-icon-generator.git).\\
