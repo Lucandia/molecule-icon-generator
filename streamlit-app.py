@@ -578,9 +578,9 @@ For more options and information, check out the
         )
 
     # donate
-    st.markdown('I enjoy working on this project in my free time, especially at night. '
-                'If you want to support me with a coffee, just ['
-                'click on the caffeine:](https://www.paypal.com/donate/?hosted_button_id=V4LJ3Z3B3KXRY)')
+    st.markdown("""I'm a student and I enjoy working on this project in my free time, especially at night. 
+                If you want to support me with a coffee, just 
+                [click on the caffeine:](https://www.paypal.com/donate/?hosted_button_id=V4LJ3Z3B3KXRY)""")
 
     html_string = '''<form action="https://www.paypal.com/donate" method="post" target="_top">
 <input type="hidden" name="hosted_button_id" value="V4LJ3Z3B3KXRY" />
