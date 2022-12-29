@@ -13,6 +13,8 @@ The atoms' colours are inspired by the [CPK colouring convention](https://scienc
 
 ## Cite this work:
 
+If you use the icons please cite this project:
+
 ```
 Lmonari5. Lmonari5/Molecule-Icon-Generator; Zenodo, 2022. https://doi.org/10.5281/ZENODO.7388429.
 ```
@@ -63,7 +65,7 @@ I enjoy working on this project in my free time, especially at night. If you wan
 
 ## License
 
-Code licensed under the GNU General Public License v3.0 ([GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html))
+Code and graphics are licensed under the GNU General Public License v3.0 ([GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html))
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-lightgrey.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 

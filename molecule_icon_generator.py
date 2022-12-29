@@ -69,7 +69,8 @@ atom_resize = {'All atoms': 1.0, 'H': 1.0, 'D': 1.0, 'T': 1.0, 'He': 1.0, 'Li': 
                'Os': 1.0, 'Ir': 1.0, 'Pt': 1.0, 'Au': 1.0, 'Hg': 1.0, 'Tl': 1.0, 'Pb': 1.0, 'Bi': 1.0, 'Po': 1.0,
                'At': 1.0, 'Rn': 1.0, 'Fr': 1.0, 'Ra': 1.0, 'Ac': 1.0, 'Th': 1.0, 'Pa': 1.0, 'U': 1.0, 'Np': 1.0,
                'Pu': 1.0, 'Am': 1.0, 'Cm': 1.0, 'Bk': 1.0, 'Cf': 1.0, 'Es': 1.0, 'Fm': 1.0, 'Md': 1.0, 'No': 1.0,
-               'Lr': 1.0, 'Rf': 1.0, 'Db': 1.0, 'Sg': 1.0, 'Bh': 1.0, 'Hs': 1.0, 'Mt': 1.0, 'other': 1.0}
+               'Lr': 1.0, 'Rf': 1.0, 'Db': 1.0, 'Sg': 1.0, 'Bh': 1.0, 'Hs': 1.0, 'Mt': 1.0, 'other': 1.0,
+               'Bond': 1.0, 'Bond spacing': 1.0, 'Outline': 1.0}
 
 # period table of emoji from the emoji-chem repository (https://github.com/whitead/emoji-chem), thanks to Andrew White
 emoji_periodic_table = {'H': '2B50', 'He': '1F388', 'Li': '1F50B', 'Be': '1F6F0', 'B': '1F939-200D-2640-FE0F',
@@ -94,9 +95,8 @@ emoji_periodic_table = {'H': '2B50', 'He': '1F388', 'Li': '1F50B', 'Be': '1F6F0'
                         'Ds': '1F3F0', 'Rg': '1FA7B', 'Cn': '1F4AB', 'Nh': '1F5FE', 'Fl': '1F4DD', 'Mc': '1F3C7',
                         'Lv': '1F4A1', 'Ts': '1F345', 'Og': '1F95D'}
 
-# A dictionary with the unicode of the emoji as key and the svg text as value, to speed up the emoji addition.
-# This helps when the same emoji is used many times (for example when using the emoji periodic table).
-emoji_requested = {}
+# A dictionary with the unicode of the emoji as key and the emoji dimension as values.
+emoji_dims = {}
 
 
 def hex_to_rgb(color):
@@ -297,62 +297,75 @@ def cylinder(radius, start, end, resolution=100):
     return x, y, z
 
 
-def add_atom_svg(src, center, radius, color, shadow=True, shadow_curve=1.125, shadow_deg=45, shadow_light=0.35,
-                 thickness=1 / 3):
+def add_atom_svg(src, atom_name, center, radius, color, outline, shadow=True, shadow_curve=1.2, shadow_deg=45,
+                 shadow_light=0.35):
     """It draws a circle, filled with the color, in the svg text. A shadow can be drawn on the circle.
 
     Parameters
     ----------
     src : list
         List containing the svg text elements.
+    atom_name : str
+        Name of the atom to use defs elements in svg.
     center : tuple
         The center of the atom in x-y coordinates.
     radius : float
         The radius of the circle.
     color : string
         The hex color to fill the circle.
+    outline : float,
+        The thickness of the border of the circle.
     shadow : bool, default: True
         Whether to add a shadow or not on the circle.
-    shadow_curve : float, default: 1.125
-        The curve of the shadow. 1.125 is a good value.
+    shadow_curve : float, default: 1.2
+        The curve of the shadow. 1.2 is a good value.
     shadow_deg : float, default: 45
         The angle in the degree of the shadow start.
     shadow_light : float, default: 0.35
         The lightness of the shadow. 0 is black, 1 is white.
-    thickness : float, default: 1/3
-        The thickness of the border of the circle.
 
     """
     shadow_color = shadow_color_correction(color, shadow_light)
-    atom_elem = ET.Element('circle')
-    atom_elem.set('cx', f'{center[0]}')
-    atom_elem.set('cy', f'{center[1]}')
-    atom_elem.set('r', f'{radius}')
-    atom_elem.set('fill', f'{color}')
-    atom_elem.set('stroke', f'{shadow_color}')
-    atom_elem.set('stroke-width', f'{radius * thickness / 2}')
+    defs = src.find('defs')
+    if not defs.find(f".//*[@id='{atom_name}']"):  # if not found the def, create the def
+        atom_group = ET.Element('g')
+        atom_group.set('id', atom_name)
+        atom_defs = ET.Element('circle')
+        atom_defs.set('cx', '0')
+        atom_defs.set('cy', '0')
+        atom_defs.set('r', f'{radius}')
+        atom_defs.set('fill', f'{color}')
+        atom_defs.set('stroke', f'{shadow_color}')
+        atom_defs.set('stroke-width', f'{outline}')
+        atom_group.append(atom_defs)
+        if shadow:
+            shadow_rad = radius - outline
+            start_shade = circ_post(-shadow_deg, radius, (0, 0))
+            end_shade = circ_post(-shadow_deg + 180, radius, (0, 0))
+            shad_elem = ET.Element('path')
+            shad_elem.set('d',
+                          f'M{start_shade[0]},{start_shade[1]} A{shadow_rad},{shadow_rad} 0, 1, 1 {end_shade[0]},{end_shade[1]} M{end_shade[0]},{end_shade[1]} A{radius * shadow_curve},{radius * shadow_curve} 0, 0,0 {start_shade[0]}, {start_shade[1]} Z')
+            shad_elem.set('fill', f'{shadow_color}')
+            shad_elem.set('stroke-width', '0')
+            atom_group.append(shad_elem)
+            # # patch to cover line that appears in jpeg and png images with pdf2image
+            # start_patch = circ_post(-shadow_deg, radius - outline, (0, 0))
+            # end_patch = circ_post(-shadow_deg + 180, radius - outline, (0, 0))
+            # patch_elem = ET.Element('path')
+            # patch_elem.set('d', f'M{start_patch[0]},{start_patch[1]} L {end_patch[0]},{end_patch[1]}')
+            # patch_elem.set('stroke', f'{color}')
+            # atom_group.append(patch_elem)
+        defs.append(atom_group)
+    atom_elem = ET.Element('use')
+    atom_elem.set('href', f'#{atom_name}')  # for browser rendering
+    atom_elem.set('xlink:href', f'#{atom_name}')  # for program rendering (Inkscape, Illustrator, ...)
+    atom_elem.set('transform', f'translate({center[0]} {center[1]})')  # create the circle at 0 and translate it after
     src.append(atom_elem)
-    if shadow:
-        start_shade = circ_post(-shadow_deg, radius, center)
-        end_shade = circ_post(-shadow_deg + 180, radius, center)
-        shad_elem = ET.Element('path')
-        shad_elem.set('d',
-                      f'M{start_shade[0]},{start_shade[1]} A{radius},{radius} 0, 1,1 {end_shade[0]},{end_shade[1]} M{end_shade[0]},{end_shade[1]} A{radius * shadow_curve},{radius * shadow_curve} 0, 0,0 {start_shade[0]}, {start_shade[1]} Z')
-        shad_elem.set('fill', f'{shadow_color}')
-        shad_elem.set('stroke-width', '0')
-        src.append(shad_elem)
-        # patch to cover line that appears in jpeg and png images with pdf2image
-        start_patch = circ_post(-shadow_deg, radius - radius * thickness / 4, center)
-        end_patch = circ_post(-shadow_deg + 180, radius - radius * thickness / 4, center)
-        patch_elem = ET.Element('path')
-        patch_elem.set('d', f'M{start_patch[0]},{start_patch[1]} L {end_patch[0]},{end_patch[1]}')
-        patch_elem.set('stroke', f'{color}')
-        src.append(patch_elem)
 
 
-def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575757', shadow_light=0.35):
+def add_bond_svg(src, bond_type, x1, y1, x2, y2, bond_thickness, outline, bondcolor='#575757', shadow_light=0.35,
+                 bond_space_multi=1):
     """It adds a line as a bond to an SVG image.
-
     Parameters
     ----------
     src : list
@@ -367,18 +380,22 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         x-coordinate of the second atom.
     y2 : float
         y-coordinate of the second atom.
-    line_thickness: float
+    bond_thickness: float
         The thickness of the bond line.
+    outline : float,
+        The thickness of the border of the bond.
     bondcolor : string, default: '#575757'
         The hex color of the bond.
     shadow_light : float, default: 0.35
         The lightness of the shadow. 0 is black, 1 is white.
+    bond_space_multi : float, default: 1
+        Bond spacing multiplier.
 
     """
     start = np.array((x1, y1))
     end = np.array((x2, y2))
-    d_space = line_thickness * 1.5
-    t_space = line_thickness * 2.5
+    d_space = bond_thickness * 1.5 * bond_space_multi
+    t_space = bond_thickness * 2.5 * bond_space_multi
     # calculate the degree of the bond line, y-axis is reversed in images
     radians = math.atan2(-y1 + y2, x1 - x2) + math.pi / 2  # add 90 degree to make the angle perpendicular
     contour_color = shadow_color_correction(bondcolor, shadow_light)
@@ -386,19 +403,16 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
     def dist_point(point, spacer):
         """This function takes a point and a spacer distance. It returns two points that have a distance
         equal to the spacer on the direction defined by the radians parent variable.
-
         Parameters
         ----------
         point : tuple
             A tuple of the x and y coordinates of the point.
         spacer : float
             The distance between the points.
-
         Returns
         -------
         tuple
             Two points with a spacer distance from point on the radian angle direction.
-
         """
         dist_x = int(math.cos(radians) * spacer)
         dist_y = int(math.sin(radians) * spacer)
@@ -407,9 +421,8 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         pt2 = point - np.array((dist_x, -dist_y))
         return pt1, pt2
 
-    def add_bond(p, q, thick=1, color=bondcolor):
+    def add_bond(p, q, thick=bond_thickness, color=bondcolor):
         """It adds a bond between two points.
-
         Parameters
         ----------
         p : tuple
@@ -417,14 +430,14 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
         q : tuple
             The second point.
         thick : float, default: 1
-            The thickness multiplier of the line.
+            The thickness of the line.
         color : str, default: bondcolor
             The hex code for the color of the bond.
         """
         bond_elem = ET.Element('line')
         bond_elem.set('stroke', f"{color}")
         bond_elem.set('stroke-linecap', "round")
-        bond_elem.set('stroke-width', f'{line_thickness * thick}')
+        bond_elem.set('stroke-width', f'{thick}')
         bond_elem.set('x1', f'{p[0]}')
         bond_elem.set('y1', f'{p[1]}')
         bond_elem.set('x2', f'{q[0]}')
@@ -434,18 +447,18 @@ def add_bond_svg(src, bond_type, x1, y1, x2, y2, line_thickness, bondcolor='#575
     if bond_type == 2:
         start_1, start_2 = dist_point(start, d_space)
         end_1, end_2 = dist_point(end, d_space)
-        add_bond(start_1, end_1, 2, contour_color)
-        add_bond(start_2, end_2, 2, contour_color)
+        add_bond(start_1, end_1, outline, contour_color)
+        add_bond(start_2, end_2, outline, contour_color)
         add_bond(start_1, end_1)
         add_bond(start_2, end_2)
     else:
-        add_bond(start, end, 2, contour_color)
+        add_bond(start, end, outline, contour_color)
         add_bond(start, end)
     if bond_type == 3:
         start_1, start_2 = dist_point(start, t_space)
         end_1, end_2 = dist_point(end, t_space)
-        add_bond(start_1, end_1, 2, contour_color)
-        add_bond(start_2, end_2, 2, contour_color)
+        add_bond(start_1, end_1, outline, contour_color)
+        add_bond(start_2, end_2, outline, contour_color)
         add_bond(start_1, end_1)
         add_bond(start_2, end_2)
 
@@ -468,9 +481,10 @@ def add_emoji(src, xy, size, unicode, color=True):
 
     """
     unicode = unicode.strip()  # just to make sure
-    if unicode in emoji_requested:
-        emoji_text = emoji_requested[unicode]
-    else:
+    emoji_id = 'Emoji' + unicode # id cannot start with a digit
+    defs = src.find('defs')
+    if not defs.find(f".//*[@id='{emoji_id}']"):  # if not found the def, create the def
+        # request emoji from online repository
         if color:
             url = f"https://raw.github.com/hfg-gmuend/openmoji/master/color/svg/{unicode}.svg"
         else:
@@ -479,17 +493,23 @@ def add_emoji(src, xy, size, unicode, color=True):
         emoji_text = BytesIO(response.content).read().decode('utf-8')
         if emoji_text == '404: Not Found':
             raise ValueError(f'Emoji unicode ({unicode}) not found')
-        emoji_requested[unicode] = emoji_text
-    root = ET.fromstring(emoji_text)
-    emoji_dim = [float(i) for i in root.get("viewBox").split()]
-    del root.attrib["viewBox"]
+        root = ET.fromstring(emoji_text)
+        emoji_dim = [float(i) for i in root.get("viewBox").split()]
+        emoji_dims[unicode] = emoji_dim
+        del root.attrib["viewBox"]
+        emoji_group = ET.Element('g')
+        emoji_group.set('id', emoji_id)
+        emoji_group.append(root)
+        defs.append(emoji_group)
+    emoji_dim = emoji_dims[unicode]
     scale_x = size / emoji_dim[2] * 3  # *3 because otherwise square emojis could be small
     scale_y = size / emoji_dim[3] * 3  # *3 because otherwise square emojis could be small
     trans_x = xy[0] - emoji_dim[2] * scale_x / 2
     trans_y = xy[1] - emoji_dim[3] * scale_y / 2
-    emoji_elem = ET.Element('g')
+    emoji_elem = ET.Element('use')
+    emoji_elem.set('href', '#' + emoji_id)  # for browser rendering
+    emoji_elem.set('xlink:href', '#' + emoji_id)  # for program rendering (Inkscape, Illustrator, ...)
     emoji_elem.set('transform', f'translate({trans_x} {trans_y}) scale({scale_x} {scale_y})')
-    emoji_elem.append(root)
     src.append(emoji_elem)
 
 
@@ -510,7 +530,7 @@ def partial_sanitize(mol):
                      catchErrors=True)
 
 
-def parse_structure(smiles, remove_H=True, nice_conformation=True, dimension_3=False, n_conf=1, force_field='UFF',
+def parse_structure(smiles, nice_conformation=True, dimension_3=False, n_conf=1, force_field='UFF',
                     randomseed=-1):
     """This function takes a SMILES string and returns molecule object that hase been prepared.
 
@@ -518,8 +538,6 @@ def parse_structure(smiles, remove_H=True, nice_conformation=True, dimension_3=F
     ----------
     smiles : string
         The SMILES string of the molecule you want to draw.
-    remove_H : bool, optional
-        Remove all non-chiral hydrogen from the molecule.
     nice_conformation : bool, default: True
         If True, the molecule will be put into a nice conformation.
     dimension_3 : bool, optional
@@ -549,9 +567,6 @@ def parse_structure(smiles, remove_H=True, nice_conformation=True, dimension_3=F
             AllChem.UFFOptimizeMoleculeConfs(mol)
         elif force_field == 'MMFF':
             AllChem.MMFFOptimizeMoleculeConfs(mol)
-        # build with 2D structure
-        if remove_H:
-            mol = Chem.RemoveHs(mol)  # remove not chiral Hydrogens
         return mol
 
     # build with 2D structure
@@ -561,14 +576,12 @@ def parse_structure(smiles, remove_H=True, nice_conformation=True, dimension_3=F
     else:
         rdDepictor.SetPreferCoordGen(False)  # rdkit conformation default
         AllChem.Compute2DCoords(mol)  # canonical rdkit conformation
-    if remove_H:
-        mol = Chem.RemoveHs(mol)  # remove not chiral Hydrogen
     mol = rdkit.Chem.Draw.rdMolDraw2D.PrepareMolForDrawing(mol)  # clean the conformer
     return mol
 
 
 def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resize, pos_multi=300,
-              shadow_light=0.35, shadow=False, single_bonds=False, conformation=0, thickness=1 / 4, verbose=False,
+              shadow_light=0.35, shadow=False, single_bonds=False, conformation=0, verbose=False,
               rotation=(0, 0, 0), emoji=None):
     """This function takes a SMILES string and returns an icon of the molecule, in format PNG, SVG, JPEG, and PDF.
 
@@ -581,7 +594,8 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
     atom_color : dictionary, default: color_map
         a dictionary of atom colors. The keys are the atom symbols, and the values are the hex colors.
     radius_multi : dictionary, default: atom_resize
-        A dictionary containing the multiplier for each atom. It multiplies the atom radius.
+        A dictionary containing the multiplier for each atom, bond and outline. It multiplies the atom radius, bond and
+        outline thickness.
     pos_multi : int, default: 300
         This is the distance between atoms.
     shadow_light : float, default: 0.35
@@ -592,8 +606,6 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
         If True, all bonds will be single bonds.
     conformation : int, default: 0
         The conformation to draw.
-    thickness : float, default: 1/4
-        The thickness of the bonds compared to the atom radius.
     verbose : bool, optional
         Prints out the atoms and bonds coordinates.
     rotation : tuple, default: (0,0,0)
@@ -621,16 +633,25 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
     svg.set('id', "molecule_icon")
     svg.set('viewBox', f"{-dim} {-dim} {dim * 2} {dim * 2}")
     svg.set('xmlns', "http://www.w3.org/2000/svg")
+    svg.set('xmlns:xlink', "http://www.w3.org/1999/xlink")
+    defs = ET.Element('defs')  # add defs to save space for repeated atoms and icons
+    svg.append(defs)
     aromatic_index = set()
     double_index = set()
     bond_done = set()
-    bond_thickness = int(atom_radius * thickness)
     # add atoms (to start from the Hydrogens, the atom index must be reversed)
     if verbose:
         print('\nAtom-index\tSymbol\tx\ty')
         print('\nBond-type\tAtom1\tAtom2')
     # order the atoms according to the z-axis
     atom_order = [k for k, v in sorted(pos_dict.items(), key=lambda item: item[1][2])]
+    bond_thickness = atom_radius * radius_multi['Bond'] / 4
+    bond_outline = bond_thickness + atom_radius * radius_multi['Outline'] / 5
+    outline = atom_radius * radius_multi['Outline'] / 10
+    if 'Bond spacing' in radius_multi and radius_multi['Bond spacing']:
+        bond_space_multi = radius_multi['Bond spacing']
+    else:
+        bond_space_multi = 1
     for atom_idx in atom_order:
         atom = mol.GetAtomWithIdx(atom_idx)
         symbol = atom.GetSymbol()
@@ -670,7 +691,8 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
                 double_index.add(idx1)
                 double_index.add(idx2)
             add_bond_svg(svg, bond_type, pos_dict[idx1][0], -pos_dict[idx1][1], pos_dict[idx2][0], -pos_dict[idx2][1],
-                         bond_thickness, bondcolor=atom_color['Bond'], shadow_light=shadow_light)
+                         bond_thickness, bond_outline, bondcolor=atom_color['Bond'], shadow_light=shadow_light,
+                         bond_space_multi=bond_space_multi)
             bond_done.add(bond_idx)
         corrected_radius = atom_radius * radius_multi[symbol]  # resize the atom dimension
         if emoji and atom_idx in emoji and emoji[atom_idx][0] and emoji[atom_idx][0].strip() != '':
@@ -678,16 +700,15 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
         elif emoji and symbol in emoji and emoji[symbol][0] and emoji[symbol][0].strip() != '':
             add_emoji(svg, (atom_x, atom_y), corrected_radius, unicode=emoji[symbol][0], color=emoji[symbol][1])
         else:
-            add_atom_svg(svg, (atom_x, atom_y), corrected_radius, atom_color[symbol], shadow=shadow,
-                         shadow_light=shadow_light,
-                         thickness=thickness)
+            add_atom_svg(svg, symbol, (atom_x, atom_y), corrected_radius, atom_color[symbol], outline, shadow=shadow,
+                         shadow_light=shadow_light)
     return svg
 
 
 def icon_print(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False, save_svg=True,
                save_png=False, save_jpeg=False, save_pdf=False, atom_color=color_map, atom_radius=100,
-               radius_multi=atom_resize, pos_multi=300, single_bonds=False,
-               shadow=True, thickness=1 / 4, shadow_light=0.35, verbose=False, rotation=(0, 0, 0), emoji=None):
+               radius_multi=atom_resize, pos_multi=300, single_bonds=False, remove_H=True,
+               shadow=True, shadow_light=0.35, verbose=False, rotation=(0, 0, 0), emoji=None):
     """This function takes a SMILES string and returns an icon of the molecule, in format PNG, SVG, JPEG, and PDF.
 
     Parameters
@@ -720,10 +741,10 @@ def icon_print(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False
         This is the distance between atoms.
     single_bonds : bool, optional
         If True, all bonds will be single bonds.
+    remove_H : bool, optional
+        Remove all non-chiral hydrogen from the molecule.
     shadow : bool, optional
         Whether to add a shadow to the image or not.
-    thickness : float, default: 1/4
-        The thickness of the bonds compared to the atom radius.
     shadow_light : float, default: 0.35
         How light the shadow is. 0.35 is a good value.
     verbose : bool, optional
@@ -744,16 +765,19 @@ def icon_print(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False
         fullname = directory + os.sep + name
     else:
         fullname = directory + os.sep + name + '.svg'
-
+    if remove_H:
+        mol = Chem.RemoveHs(mol)  # remove not chiral Hydrogen
     svg = build_svg(mol, atom_radius=atom_radius, verbose=verbose, atom_color=atom_color,
-                    radius_multi=radius_multi, thickness=thickness, shadow_light=shadow_light,
+                    radius_multi=radius_multi, shadow_light=shadow_light,
                     shadow=shadow, single_bonds=single_bonds, pos_multi=pos_multi, rotation=rotation, emoji=emoji)
 
     # Draw indices if emojis are present
     if emoji:
         for atom in mol.GetAtoms():
             atom.SetAtomMapNum(atom.GetIdx())
-        rdMolDraw2D.MolDrawOptions.addAtomIndices = True
+    else:  # clear atom mapping
+        for atom in mol.GetAtoms():
+            atom.SetAtomMapNum(0)
     if rdkit_png:
         rdkit.Chem.Draw.MolToFile(mol, directory + os.sep + name + "_rdkit.png")
     if rdkit_svg:
@@ -790,8 +814,8 @@ def icon_print(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False
 
 
 def graph_3d(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, rdkit_svg=False, resolution=100,
-             atom_color=color_map, atom_radius=100, radius_multi=atom_resize, pos_multi=300,
-             thickness=1 / 4, rotation=(0, 0, 0)):
+             atom_color=color_map, atom_radius=100, radius_multi=atom_resize, pos_multi=300, remove_H=True,
+             rotation=(0, 0, 0)):
     """This function takes a SMILES string and returns an icon of the molecule, in format PNG, SVG, JPEG, and PDF.
 
     Parameters
@@ -816,8 +840,8 @@ def graph_3d(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, 
         A dictionary containing the multiplier for each atom. It multiplies the atom radius.
     pos_multi : int, default: 300
         This is the distance between atoms.
-    thickness : float, default: 1/4
-        The thickness of the bonds compared to the atom radius.
+    remove_H : bool, optional
+        Remove all non-chiral hydrogen from the molecule.
     rotation : tuple, default: (0,0,0)
         Tuple containing the angle (in degree) of the x-axis, y-axis and z-axis to rotate the image.
 
@@ -838,6 +862,8 @@ def graph_3d(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, 
         with open(directory + os.sep + name + "_rdkit.svg", 'w') as f:
             f.write(rdkit_svg_text)
 
+    if remove_H:
+        mol = Chem.RemoveHs(mol)  # remove not chiral Hydrogen
     conf = mol.GetConformer()
     max_radius_multi = atom_radius * max(radius_multi.values())
     pos_dict, max_pos, bond_map = position_map(mol, conf, rotation)
@@ -862,11 +888,11 @@ def graph_3d(mol, name='molecule_icon', directory=os.getcwd(), rdkit_png=False, 
             yaxis=dict(range=axis_range, ),
             zaxis=dict(range=axis_range, ), ), )
     # build bonds
+    bond_thickness = atom_radius * radius_multi['Bond'] / 4
     for bond in mol.GetBonds():
         idx1 = bond.GetBeginAtomIdx()
         idx2 = bond.GetEndAtomIdx()
         color_scale = [[0, atom_color['Bond']], [1, atom_color['Bond']]]
-        bond_thickness = int(atom_radius * thickness)
         name = f'{bond.GetIdx()}: {bond.GetBondType()}'
         (x_surf, y_surf, z_surf) = cylinder(bond_thickness, pos_dict[idx1], pos_dict[idx2], resolution=resolution)
         data = go.Surface(x=x_surf, y=y_surf, z=z_surf, colorscale=color_scale, name=name,
@@ -927,10 +953,6 @@ def parse():
     optional.add_argument("--hide_shadows",
                           action='store_true',
                           help='Hide the shadows of the atoms')
-    optional.add_argument('-t', "--thickness",
-                          type=float,
-                          default=0.35,
-                          help='Line thickness compared to atom size, range [0:1]')
     optional.add_argument("--shadow_light",
                           type=float,
                           default=0.35,
@@ -944,8 +966,8 @@ def parse():
 
 if __name__ == "__main__":
     parsed = parse()
-    molecule = parse_structure(parsed.SMILE, remove_H=parsed.remove_H)
+    molecule = parse_structure(parsed.SMILE)
     icon_print(molecule, name=parsed.name, directory=parsed.directory, pos_multi=int(300 * parsed.position_multiplier),
                rdkit_svg=parsed.rdkit_svg, single_bonds=parsed.single_bond, save_png=True, verbose=parsed.verbose,
-               atom_radius=100 * parsed.atom_multiplier, thickness=parsed.thickness,
+               atom_radius=100 * parsed.atom_multiplier, remove_H=parsed.remove_H,
                shadow=not parsed.hide_shadows, shadow_light=parsed.shadow_light)
