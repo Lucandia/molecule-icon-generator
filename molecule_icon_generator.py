@@ -639,6 +639,8 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
     if background and background != '#ffffff':
         back = ET.Element('rect')
         back.set('id', "background")
+        back.set('x', "0")
+        back.set('y', "0")
         back.set('height', "100%")
         back.set('width', "100%")
         back.set('fill', f"{background}")

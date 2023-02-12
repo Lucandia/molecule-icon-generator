@@ -406,12 +406,14 @@ For more options and information, check out the
             if atom_color == "All icon":  # set all icon same color
                 unicolor = new_color[atom_color]
                 for key in new_color:  # have to modify directly new_color, which is saved in session state
+                    if key == 'Background':
+                        continue
                     new_color[key] = unicolor
             if atom_color == "All atoms":  # set all atoms same color
                 unicolor = new_color[atom_color]
                 bond_color = new_color['Bond']
                 for key in new_color:  # have to modify directly new_color, which is saved in session state
-                    if key == 'Bond':
+                    if key == 'Bond' or key == 'Background':
                         continue
                     new_color[key] = unicolor
         st.session_state['last_atom_color_but'] = atom_color
