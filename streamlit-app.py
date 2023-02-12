@@ -391,7 +391,8 @@ For more options and information, check out the
         with col1:
             atom_color = st.selectbox(
                 'Change the color:',
-                sorted(list(mig.color_map.keys())), key='atom_color_select')
+                ['All atoms', 'All icon', 'Background', 'Bond'] + sorted(list(mig.color_map.keys())),
+                key='atom_color_select')
         with col2:
             if last_atom_color != atom_color:
                 def_value = new_color[atom_color]

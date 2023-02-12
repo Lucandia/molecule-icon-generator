@@ -54,7 +54,7 @@ color_map = {"H": "#FFFFFF", "D": "#FFFFC0", "T": "#FFFFA0", "He": "#D9FFFF", "L
              "U": "#008FFF", "Np": "#0080FF", "Pu": "#006BFF", "Am": "#545CF2", "Cm": "#785CE3", "Bk": "#8A4FE3",
              "Cf": "#A136D4", "Es": "#B31FD4", "Fm": "#B31FBA", "Md": "#B30DA6", "No": "#BD0D87", "Lr": "#C70066",
              "Rf": "#CC0059", "Db": "#D1004F", "Sg": "#D90045", "Bh": "#E00038", "Hs": "#E6002E", "Mt": "#EB0026",
-             'other': '#f5c2cb', 'Bond': '#979797', 'Background': "#000000", 'All icon': "#000000", 'All atoms': "#000000"}
+             'other': '#f5c2cb', 'Bond': '#979797', 'Background': "#ffffff", 'All icon': "#000000", 'All atoms': "#000000"}
 
 # dictionary containing the value to multiply to the final radius of each atom
 atom_resize = {'All atoms': 1.0, 'H': 1.0, 'D': 1.0, 'T': 1.0, 'He': 1.0, 'Li': 1.0, 'Be': 1.0, 'B': 1.0, 'C': 1.0,
@@ -636,11 +636,11 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
     svg.set('xmlns:xlink', "http://www.w3.org/1999/xlink")
     background = atom_color['Background']
     # add background if it is not white
-    if background and background != '#000000':
+    if background and background != '#ffffff':
         back = ET.Element('rect')
         back.set('height', "100%")
         back.set('width', "100%")
-        back.set('fill', "background")
+        back.set('fill', f"{background}")
         svg.append(back)
     defs = ET.Element('defs')  # add defs to save space for repeated atoms and icons
     svg.append(defs)
