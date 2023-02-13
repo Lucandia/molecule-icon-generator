@@ -641,8 +641,8 @@ def build_svg(mol, atom_radius=100, atom_color=color_map, radius_multi=atom_resi
         back.set('id', "background")
         back.set('x', f"{-dim}")
         back.set('y', f"{-dim}")
-        back.set('height', "100%")
-        back.set('width', "100%")
+        back.set('height', "101%") # 101 to make sure covers the whole background
+        back.set('width', "101%")
         back.set('fill', f"{background}")
         svg.append(back)
     defs = ET.Element('defs')  # add defs to save space for repeated atoms and icons
