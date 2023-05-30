@@ -1,3 +1,5 @@
 libfontconfig1
 libxrender1
 poppler-utils
+libcairo2-dev 
+pkg-config 
