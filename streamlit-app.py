@@ -539,22 +539,6 @@ For more options and information, check out the
     if not smiles_list:
         # download the html-graph or the image
         if dimension == '3D interactive':
-            with open(filename, "rb") as file:
-                btn = st.download_button(label="Download 3D plot",
-                                         data=file,
-                                         file_name="molecule-icon-graph.html",
-                                         help=f'''Download the html graph and open it in your browser to take 
-                                              {img_format} snapshots with the camera button''')
-        else:
-            filename = '0.' + img_format
-            with open(filename, "rb") as file:
-                btn = st.download_button(label="Download icon",
-                                         data=file,
-                                         file_name='molecule_icon.' + img_format,
-                                         mime=f"image/{img_format}")
-        cite()
-        # add preview for single image
-        if dimension == '3D interactive':
             show_graph = st.checkbox('Show molecule 3D plot (the app will be slower)', )
             if show_graph:
                 st.write(f'''
@@ -565,6 +549,13 @@ For more options and information, check out the
                 with col1:
                     graph.update_layout(height=300)
                     st.plotly_chart(graph, config=config, use_container_width=True)
+            cite()
+            with open(filename, "rb") as file:
+                btn = st.download_button(label="Download 3D plot",
+                                         data=file,
+                                         file_name="molecule-icon-graph.html",
+                                         help=f'''Download the html graph and open it in your browser to take 
+                                              {img_format} snapshots with the camera button''')
         else:
             st.write('''
                 Image SVG preview:
@@ -574,7 +565,14 @@ For more options and information, check out the
                 f = open("0.svg", "r")
                 svg_text = f.read()
                 render_svg(svg_text)
-        with col2:
+            cite()
+            filename = '0.' + img_format
+            with open(filename, "rb") as file:
+                btn = st.download_button(label="Download icon",
+                                         data=file,
+                                         file_name='molecule_icon.' + img_format,
+                                         mime=f"image/{img_format}")
+        with col2: # generale col 2 in each case
             if rdkit_draw:
                 f = open("0_rdkit.svg", "r")
                 svg_text = f.read()
@@ -584,16 +582,7 @@ For more options and information, check out the
                                              data=file,
                                              file_name='molecule_icon_rdkit.svg',
                                              mime=f"image/{img_format}")
-
     else:
-        shutil.make_archive('molecules-icons', 'zip', direct)
-        filename = 'molecules-icons.zip'
-        with open(filename, "rb") as file:
-            btn = st.download_button(label="Download icons zip",
-                                     data=file,
-                                     file_name='molecules-icons.zip',
-                                     mime=f"image/{img_format}")
-        cite()
         # add preview for single image
         st.write('''
             Image SVG preview for one icon:
@@ -611,6 +600,15 @@ For more options and information, check out the
                 f = open(example_rdkit, "r")
                 svg_text = f.read()
                 render_svg(svg_text)
+        shutil.make_archive('molecules-icons', 'zip', direct)
+        # download zip button
+        cite()
+        filename = 'molecules-icons.zip'
+        with open(filename, "rb") as file:
+            btn = st.download_button(label="Download icons zip",
+                                     data=file,
+                                     file_name='molecules-icons.zip',
+                                     mime=f"image/{img_format}")
 
     # save settings and allow download
     with open('molecule_icon_settings.json', 'w') as settings:
