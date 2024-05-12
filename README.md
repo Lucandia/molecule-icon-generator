@@ -16,7 +16,7 @@ The atoms' colours are inspired by the [CPK colouring convention](https://scienc
 If you use the icons please cite this project:
 
 ```
-Lmonari5. Lmonari5/Molecule-Icon-Generator; Zenodo, 2022. https://doi.org/10.5281/ZENODO.7388429.
+Lucandia. Lucandia/Molecule-Icon-Generator; Zenodo, 2022. https://doi.org/10.5281/ZENODO.7388429.
 ```
 [![DOI](https://zenodo.org/badge/530035520.svg)](https://zenodo.org/badge/latestdoi/530035520)
 
