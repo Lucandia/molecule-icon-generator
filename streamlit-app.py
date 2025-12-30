@@ -30,9 +30,9 @@ smiles_help = """  \n  If you don't know SMILES, check this out:
                 https://chemicbook.com/2021/02/13/smiles-strings-explained-for-beginners-part-1.html  \n  """
 
 loading_err = KeyError("""The app encountered a problem in initializing the data. 
-Try to reload the page. If the problem persists, contact molecule.icon@gmail.com""")
+Try to reload the page. If the problem persists, contact  l.monari@zmbh.uni-heidelberg.de""")
 
-problem_mail = '  \n  If the problem persists, contact molecule.icon@gmail.com'
+problem_mail = '  \n  If the problem persists, contact l.monari@zmbh.uni-heidelberg.de'
 
 def render_svg(svg):
     """Renders the given svg string."""
