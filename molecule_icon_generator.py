@@ -489,7 +489,7 @@ def add_emoji(src, xy, size, unicode, color=True):
             url = f"https://raw.github.com/hfg-gmuend/openmoji/master/color/svg/{unicode}.svg"
         else:
             url = f"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/black/svg/{unicode}.svg"
-        response = requests.get(url)
+        response = requests.get(url, timeout=30)
         emoji_text = BytesIO(response.content).read().decode('utf-8')
         if emoji_text == '404: Not Found':
             raise ValueError(f'Emoji unicode ({unicode}) not found')
